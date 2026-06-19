@@ -1,0 +1,3120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CareerPilot AI</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --panel: #fffdfa;
+      --panel-2: #fbfaf7;
+      --text: #26231f;
+      --muted: #746f66;
+      --line: #e7e0d6;
+      --line-strong: #d7cfc2;
+      --accent: #b85d34;
+      --accent-soft: #f4e4d9;
+      --green: #4f7f63;
+      --green-soft: #e7f0e8;
+      --blue: #4f6f91;
+      --blue-soft: #e8eef5;
+      --yellow-soft: #f7efd8;
+      --danger: #9d4b45;
+      --shadow: 0 18px 50px rgba(49, 43, 35, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 253, 250, .76);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav-label {
+      margin: 18px 10px 8px;
+      color: #9b9489;
+      font-size: 12px;
+    }
+
+    .tab-btn {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 5px 0;
+      padding: 11px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .tab-btn:hover,
+    .tab-btn.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: var(--line-strong);
+      flex: 0 0 auto;
+    }
+
+    .tab-btn.active .dot { background: var(--accent); }
+
+    .tab-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 580;
+    }
+
+    .tab-desc {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .hint {
+      margin-top: 24px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 22px 28px 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    .topbar h1 {
+      margin-bottom: 6px;
+      font-size: 24px;
+      font-weight: 650;
+    }
+
+    .topbar p,
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .btn {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      border-color: #a94f2a;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .ghost { background: transparent; }
+    .danger { color: var(--danger); border-color: #dfb8b2; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .shell {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 253, 250, .72);
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin-bottom: 5px;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1.05fr 1.55fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .card.alt { background: var(--panel-2); }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+    }
+
+    .job-list,
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .job {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .job.active {
+      border-color: #d9a28b;
+      background: #fff8f4;
+    }
+
+    .job-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .job strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .job small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #874020;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .tag.green { background: var(--green-soft); color: var(--green); }
+    .tag.blue { background: var(--blue-soft); color: var(--blue); }
+    .tag.yellow { background: var(--yellow-soft); color: #7d6637; }
+
+    .input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 11px;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .mini-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .mini-tabs button.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #874020;
+    }
+
+    .brief-item {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .brief-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .upload {
+      display: grid;
+      place-items: center;
+      min-height: 138px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      text-align: center;
+      color: var(--muted);
+      padding: 18px;
+    }
+
+    .upload strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .table {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    .table th,
+    .table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: var(--panel-2);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .table tr:last-child td { border-bottom: 0; }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.68;
+      font-size: 14px;
+    }
+
+    .todo {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .box {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: #fff;
+      flex: 0 0 auto;
+    }
+
+    .box.done {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .score {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid #c9dfcd;
+      font-weight: 700;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .workflow-node {
+      position: relative;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .workflow-node::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .workflow-node:last-child::after { display: none; }
+
+    .workflow-node strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .workflow-node span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .node-output {
+      display: grid;
+      gap: 10px;
+    }
+
+    .two-col-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .trace-box {
+      max-height: 320px;
+      overflow: auto;
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #2b2925;
+      color: #f7f1e8;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .progress-wrap {
+      display: none;
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .progress-wrap.active { display: block; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width .28s ease;
+    }
+
+    .analysis-results.hidden { display: none; }
+
+    .analysis-workbench {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .analysis-module {
+      display: grid;
+      gap: 12px;
+    }
+
+    .module-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .module-title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .module-title strong {
+      font-size: 15px;
+    }
+
+    .module-title span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .module-progress {
+      display: none;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .analysis-module.running .module-progress { display: block; }
+
+    .resume-preview {
+      min-height: 180px;
+      max-height: 360px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .resume-preview iframe {
+      display: block;
+      width: 100%;
+      height: 360px;
+      border: 0;
+      background: #fff;
+    }
+
+    .resume-preview pre {
+      margin: 0;
+      padding: 12px;
+      white-space: pre-wrap;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .insight-card {
+      border-left: 3px solid var(--accent);
+    }
+
+    .compact-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .compact-list li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .compact-list li:last-child { border-bottom: 0; }
+
+    .number-dot {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: #874020;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .analysis-hero {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, .7fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .verdict {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .verdict strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .verdict span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .span-2 { grid-column: 1 / -1; }
+
+    .focus-card {
+      min-height: 100%;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .brief-text {
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .empty {
+      padding: 22px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      padding: 11px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: .2s ease;
+      z-index: 5;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .grid-2,
+      .grid-3,
+      .workflow,
+      .two-col-list,
+      .analysis-hero,
+      .focus-grid,
+      .form-grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .wide { grid-column: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">CP</div>
+        <div>
+          <strong>CareerPilot AI</strong>
+          <span>求职作战台</span>
+        </div>
+      </div>
+
+      <div class="nav-label">主导航</div>
+      <button class="tab-btn active" data-tab="dashboard">
+        <span class="dot"></span>
+        <span><span class="tab-title">首页看板</span><span class="tab-desc">总览进度、风险和本周待办</span></span>
+      </button>
+      <button class="tab-btn" data-tab="jobs">
+        <span class="dot"></span>
+        <span><span class="tab-title">岗位管理</span><span class="tab-desc">新增岗位、查看详情、推进状态</span></span>
+      </button>
+      <button class="tab-btn" data-tab="profile">
+        <span class="dot"></span>
+        <span><span class="tab-title">资料库</span><span class="tab-desc">简历、作品集、经历素材</span></span>
+      </button>
+      <button class="tab-btn" data-tab="analysis">
+        <span class="dot"></span>
+        <span><span class="tab-title">AI 分析</span><span class="tab-desc">JD 拆解、匹配度、风险追问</span></span>
+      </button>
+      <button class="tab-btn" data-tab="interview">
+        <span class="dot"></span>
+        <span><span class="tab-title">面试准备</span><span class="tab-desc">准备卡、Brief、复盘</span></span>
+      </button>
+
+      <div class="hint">
+        当前版本已支持本地保存。数据存储在浏览器 localStorage 中，刷新页面不会丢。
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">首页看板</h1>
+          <p id="page-desc">集中查看投递进度、近期面试、AI 发现的准备风险。</p>
+        </div>
+        <div class="actions">
+          <span class="tag green">简历多版本已启用</span>
+          <button class="ghost" data-jump="profile">导入简历</button>
+          <button class="primary" id="top-new-job">新增岗位</button>
+        </div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>求职总览</h2>
+              <p class="muted">面向真实海投场景，把状态、风险和下一步行动放在第一屏。</p>
+            </div>
+            <span class="tag blue" id="week-interviews">本周 0 场面试</span>
+          </div>
+
+          <div class="metrics">
+            <div class="metric"><span>全部岗位</span><strong id="metric-total">0</strong></div>
+            <div class="metric"><span>已投递</span><strong id="metric-applied">0</strong></div>
+            <div class="metric"><span>面试中</span><strong id="metric-interview">0</strong></div>
+            <div class="metric"><span>待完成</span><strong id="metric-todo">0</strong></div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <h3>近期关键岗位</h3>
+              <div class="job-list" id="dashboard-jobs"></div>
+            </div>
+
+            <div class="card">
+              <h3>AI 发现的共性风险</h3>
+              <div class="grid-2" id="dashboard-risks"></div>
+            </div>
+
+            <div class="card">
+              <h3>今日待办</h3>
+              <div id="dashboard-todos"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="jobs">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>岗位管理</h2>
+              <p class="muted">左边选择岗位，右边编辑详情。保存后可直接进入 AI 分析。</p>
+            </div>
+            <div class="actions">
+              <button id="new-job">新建空白岗位</button>
+              <button class="primary" id="save-job">保存岗位</button>
+            </div>
+          </div>
+
+          <div class="mini-tabs" id="status-filters">
+            <button class="active" data-status="全部">全部岗位</button>
+            <button data-status="已投递">已投递</button>
+            <button data-status="测评">测评</button>
+            <button data-status="面试中">面试中</button>
+            <button data-status="已结束">已结束</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <h3>岗位列表</h3>
+              <div class="job-list" id="job-list"></div>
+            </div>
+
+            <div class="card">
+              <h3>岗位详情</h3>
+              <div class="form-grid">
+                <label>公司名称<input class="input" id="job-company" /></label>
+                <label>岗位名称<input class="input" id="job-title-input" /></label>
+                <label>岗位方向<select id="job-type"><option>AI 产品</option><option>数据产品</option><option>B 端产品</option><option>增长产品</option><option>产品运营</option><option>其他</option></select></label>
+                <label>当前状态<select id="job-status"><option>已保存</option><option>已投递</option><option>测评</option><option>面试中</option><option>Offer</option><option>已拒绝</option><option>已结束</option></select></label>
+                <label>投递渠道<select id="job-channel"><option>官网</option><option>LinkedIn</option><option>Boss</option><option>内推</option><option>邮箱</option><option>其他</option></select></label>
+                <label>面试/截止时间<input class="input" id="job-date" type="datetime-local" /></label>
+                <label>投递简历<select id="job-resume"></select></label>
+                <label class="wide">JD 链接<input class="input" id="job-link" placeholder="https://" /></label>
+                <label class="wide">JD 原文<textarea id="job-jd" placeholder="粘贴岗位 JD，保存后可以去 AI 分析页拆解"></textarea></label>
+                <label class="wide">JD 图片上传
+                  <input class="input" id="jd-image-file" type="file" accept="image/*" />
+                </label>
+              </div>
+              <div class="actions" style="margin-top: 12px;">
+                <button id="parse-jd-fields">从 JD 自动识别字段</button>
+                <span class="muted" id="jd-parse-status">粘贴 JD 后会尝试自动填充岗位信息</span>
+              </div>
+              <div class="resume-preview" id="jd-image-preview" style="display:none; margin-top: 12px;"></div>
+            </div>
+
+            <div class="card">
+              <h3>下一步动作</h3>
+              <div class="brief-item" style="margin-bottom: 10px;">
+                <strong>当前绑定简历</strong>
+                <span class="muted" id="job-bound-resume">默认简历</span>
+              </div>
+              <label style="margin-bottom: 10px;">更换绑定简历<select id="job-bound-resume-select"></select></label>
+              <div id="job-next-actions"></div>
+              <div class="actions" style="margin-top: 14px;">
+                <button id="delete-job" class="danger">删除</button>
+                <button data-jump="analysis">分析 JD</button>
+                <button class="primary" data-jump="interview">生成准备卡</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="profile">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>资料库</h2>
+              <p class="muted">管理简历、作品集、经历素材和求职目标，作为 AI 匹配岗位的个人上下文。</p>
+            </div>
+            <div class="actions">
+              <input id="resume-file" type="file" accept=".txt,.md,.doc,.docx,.pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+              <button id="upload-trigger">上传文件</button>
+              <button id="new-resume-version">保存为新简历版本</button>
+              <button class="primary" id="save-profile">保存资料</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>个人资料</h3>
+              <div class="form-grid">
+                <label>目标岗位<input class="input" id="profile-target" placeholder="例如：AI 产品经理、数据产品" /></label>
+                <label>目标行业<input class="input" id="profile-industry" placeholder="例如：内容社区、AI 应用、SaaS" /></label>
+                <label>当前简历版本<select id="profile-resume-select"></select></label>
+                <label>版本名称<input class="input" id="profile-resume-name" placeholder="例如：AI产品岗简历 / 数据产品岗简历" /></label>
+                <label class="wide">简历 / 自我介绍<textarea id="profile-resume" placeholder="粘贴简历文本。后续 JD 匹配会基于这里判断你的经历素材。"></textarea></label>
+                <label class="wide">核心项目<textarea id="profile-projects" placeholder="列出 2-3 个最想在面试里讲的项目"></textarea></label>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>AI 生成的个人画像</h3>
+              <div class="grid-2" id="profile-summary"></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 14px;">
+            <div class="section-head" style="margin-bottom: 10px;">
+              <div>
+                <h3 style="margin-bottom: 4px;">简历预览</h3>
+                <p class="muted">上传后在这里预览。PDF 可直接预览，TXT/MD 显示正文，DOC/DOCX 下一步接解析预览。</p>
+              </div>
+              <span class="tag blue" id="resume-preview-status">未上传</span>
+            </div>
+            <div class="resume-preview" id="resume-preview"></div>
+          </div>
+
+          <div class="card" style="margin-top: 14px;">
+            <div class="section-head" style="margin-bottom: 10px;">
+              <div>
+                <h3 style="margin-bottom: 4px;">简历版本管理</h3>
+                <p class="muted">查看所有简历版本，切换预览，删除不再使用的版本。</p>
+              </div>
+            </div>
+            <div class="job-list" id="resume-version-list"></div>
+          </div>
+
+          <div class="card" style="margin-top: 14px;">
+            <h3>经历素材库</h3>
+            <table class="table">
+              <thead><tr><th>素材</th><th>适合匹配的 JD 要求</th><th>面试表达角度</th></tr></thead>
+              <tbody id="experience-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="analysis">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>AI 分析</h2>
+              <p class="muted">把 JD 转成求职作战方案：岗位干什么、要什么能力、我怎么匹配、下一步准备什么。</p>
+            </div>
+            <div class="actions">
+              <button id="start-analysis">开始分析</button>
+              <button id="run-analysis">重新分析</button>
+              <button class="primary" id="save-analysis">保存分析</button>
+            </div>
+          </div>
+
+          <div class="progress-wrap" id="analysis-progress">
+            <div class="progress-label">
+              <span id="analysis-progress-text">准备开始分析</span>
+              <span id="analysis-progress-value">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar" id="analysis-progress-bar"></div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>当前岗位</h3>
+              <label style="margin-bottom: 10px;">选择分析岗位<select id="analysis-job-select"></select></label>
+              <label style="margin-bottom: 10px;">选择分析简历<select id="analysis-resume-select"></select></label>
+              <div class="brief-item" id="analysis-current-job"></div>
+              <h3 style="margin-top: 14px;">原始 JD</h3>
+              <p class="muted" id="analysis-jd"></p>
+              <label style="margin-top: 14px;">公司/业务参考资料<textarea id="analysis-references" placeholder="可粘贴官网链接、新闻链接、公司介绍、业务资料。岗位理解 Skill 会优先基于这里补充业务上下文。"></textarea></label>
+            </div>
+
+            <div class="card">
+              <h3>分析状态</h3>
+              <div class="brief-item" id="api-status" style="margin-bottom: 10px;"><strong>API 状态</strong><span class="muted">正在检查...</span></div>
+              <div class="node-output" id="workflow-summary"></div>
+            </div>
+          </div>
+
+          <div class="analysis-results" id="analysis-results">
+            <div class="analysis-hero" id="analysis-hero"></div>
+
+            <div class="analysis-workbench">
+              <div class="card focus-card analysis-module" data-module-card="jobUnderstanding">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>岗位理解</strong>
+                    <span>先搞清楚这个岗位到底在什么业务里解决什么问题。</span>
+                  </div>
+                  <button data-generate-module="jobUnderstanding">生成</button>
+                </div>
+                <div class="module-progress" data-module-progress="jobUnderstanding">
+                  <div class="progress-label"><span data-module-progress-text="jobUnderstanding">正在生成岗位理解</span><span data-module-progress-value="jobUnderstanding">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="jobUnderstanding"></div></div>
+                </div>
+                <div id="job-understanding"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="capabilityRequirements">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>能力要求</strong>
+                    <span>把 JD 里的显性要求和隐性考点拆开，避免泛泛准备。</span>
+                  </div>
+                  <button data-generate-module="capabilityRequirements">生成</button>
+                </div>
+                <div class="module-progress" data-module-progress="capabilityRequirements">
+                  <div class="progress-label"><span data-module-progress-text="capabilityRequirements">正在提炼能力要求</span><span data-module-progress-value="capabilityRequirements">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="capabilityRequirements"></div></div>
+                </div>
+                <div id="capability-requirements"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="personalStrategy">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>匹配策略</strong>
+                    <span>选择该讲哪段经历、怎么包装，不夸大也不浪费亮点。</span>
+                  </div>
+                  <button data-generate-module="personalStrategy">生成</button>
+                </div>
+                <div class="module-progress" data-module-progress="personalStrategy">
+                  <div class="progress-label"><span data-module-progress-text="personalStrategy">正在匹配简历与岗位</span><span data-module-progress-value="personalStrategy">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="personalStrategy"></div></div>
+                </div>
+                <div id="personal-strategy"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="prepFocus">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>准备重点</strong>
+                    <span>沉淀面试前 30 分钟和 2 小时各自该做什么。</span>
+                  </div>
+                  <button data-generate-module="prepFocus">生成</button>
+                </div>
+                <div class="module-progress" data-module-progress="prepFocus">
+                  <div class="progress-label"><span data-module-progress-text="prepFocus">正在生成准备计划</span><span data-module-progress-value="prepFocus">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="prepFocus"></div></div>
+                </div>
+                <div id="prep-focus"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="coverLetter">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>Cover Letter</strong>
+                    <span>基于岗位理解和所选简历，生成投递时可直接改用的一段话。</span>
+                  </div>
+                  <button data-generate-module="coverLetter">生成</button>
+                </div>
+                <div class="module-progress" data-module-progress="coverLetter">
+                  <div class="progress-label"><span data-module-progress-text="coverLetter">正在撰写 Cover Letter</span><span data-module-progress-value="coverLetter">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="coverLetter"></div></div>
+                </div>
+                <div id="cover-letter"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="selfIntroduction">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>自我介绍</strong>
+                    <span>按岗位叙事、面试场景和当前绑定简历生成开场表达。</span>
+                  </div>
+                  <button data-generate-module="selfIntroduction">生成</button>
+                </div>
+                <div class="grid-2" style="margin-bottom: 10px;">
+                  <label>面试场景
+                    <select id="self-intro-scene">
+                      <option value="业务面">业务面</option>
+                      <option value="HR 面">HR 面</option>
+                      <option value="创始人面">创始人面</option>
+                      <option value="技术产品面">技术产品面</option>
+                      <option value="咖啡聊 / 非正式沟通">咖啡聊 / 非正式沟通</option>
+                    </select>
+                  </label>
+                  <label>话术时长
+                    <select id="self-intro-length">
+                      <option value="60秒">60 秒</option>
+                      <option value="30秒">30 秒</option>
+                      <option value="90秒">90 秒</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="module-progress" data-module-progress="selfIntroduction">
+                  <div class="progress-label"><span data-module-progress-text="selfIntroduction">正在撰写自我介绍</span><span data-module-progress-value="selfIntroduction">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="selfIntroduction"></div></div>
+                </div>
+                <div id="self-introduction"></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 14px;">
+              <div class="section-head" style="margin-bottom: 10px;">
+                <div>
+                  <h3 style="margin-bottom: 4px;">工作流 Trace</h3>
+                  <p class="muted">用于观察每个 Skill 的结构化输出。后续接真实 LLM API 时，也会要求模型返回类似 JSON。</p>
+                </div>
+                <button id="copy-trace">复制 JSON</button>
+              </div>
+              <pre class="trace-box" id="workflow-trace"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="interview">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>面试准备</h2>
+              <p class="muted">生成准备卡、面试前 Brief，并沉淀面试复盘。</p>
+            </div>
+            <div class="actions">
+              <button id="generate-prep">生成准备内容</button>
+              <button class="primary" id="save-review">保存复盘</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>岗位准备卡</h3>
+              <div class="stack" id="prep-card"></div>
+            </div>
+
+            <div class="card">
+              <h3>面试速览</h3>
+              <div class="stack" id="interview-brief"></div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 14px;">
+            <div class="card">
+              <h3>面试复盘记录</h3>
+              <label>面试问题<textarea id="review-questions" placeholder="记录面试官问了什么"></textarea></label>
+              <label style="margin-top: 10px;">自我表现<textarea id="review-notes" placeholder="记录哪里讲得好，哪里不够具体"></textarea></label>
+            </div>
+
+            <div class="card">
+              <h3>AI 复盘建议</h3>
+              <div class="stack" id="review-suggestions"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "careerpilot-ai-v2";
+    const APP_VERSION = "resume-version-v1";
+    const pageMeta = {
+      dashboard: ["首页看板", "集中查看投递进度、近期面试、AI 发现的准备风险。"],
+      jobs: ["岗位管理", "新增岗位、查看详情、推进状态都在这里完成。"],
+      profile: ["资料库", "管理简历、作品集、经历素材和求职目标，让 AI 知道你是谁。"],
+      analysis: ["AI 分析", "拆解 JD、分析匹配度、生成风险追问和准备建议。"],
+      interview: ["面试准备", "生成准备卡、面试 Brief，并沉淀面试复盘。"]
+    };
+
+    const seedJobs = [
+      {
+        id: crypto.randomUUID(),
+        company: "小红书",
+        title: "AI 产品经理实习生",
+        type: "AI 产品",
+        status: "面试中",
+        channel: "官网",
+        date: "2026-06-15T14:00",
+        link: "https://careers.example.com/job/ai-pm-intern",
+        jd: "负责 AI 产品功能规划，结合社区内容生态和创作者需求，探索大模型在内容生产、分发、互动等场景的应用。与算法、工程、设计团队协作，推进产品需求落地，并基于用户反馈持续迭代体验。",
+        todos: ["研究公司 AI 产品线", "生成面试 Brief", "准备风险追问"],
+        review: {}
+      },
+      {
+        id: crypto.randomUUID(),
+        company: "阿里巴巴",
+        title: "AI Agent PM Intern",
+        type: "AI 产品",
+        status: "测评",
+        channel: "内推",
+        date: "2026-06-13T20:00",
+        link: "",
+        jd: "参与 Agent 产品规划，负责用户任务拆解、工具调用链路、效果评估和产品迭代，要求理解大模型能力边界、Prompt 工程、RAG 和自动化评估。",
+        todos: ["完成测评", "准备 Agent eval 讲法"],
+        review: {}
+      }
+    ];
+
+    let state = loadState();
+    let selectedJobId = state.selectedJobId || state.jobs[0]?.id || null;
+    let currentStatusFilter = "全部";
+    let analysisRunning = false;
+    let moduleRunningKey = null;
+    let moduleProgressTimer = null;
+    let moduleProgress = {};
+    let apiHealth = null;
+    let progressTimer = null;
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.appVersion !== APP_VERSION) {
+          parsed.jobs = (parsed.jobs || []).map((job) => ({ ...job, analysis: null, prep: null }));
+          parsed.appVersion = APP_VERSION;
+        }
+        ensureResumeLibrary(parsed);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        return parsed;
+      }
+      const initial = {
+        appVersion: APP_VERSION,
+        profile: {
+          target: "AI 产品经理、数据产品",
+          industry: "内容社区、AI 应用、SaaS",
+          resume: "",
+          resumeFileName: "",
+          resumeFileType: "",
+          resumePreviewText: "",
+          resumePreviewKind: "",
+          projects: "CareerPilot AI：面向海投场景的 JD 拆解与面试准备助手。"
+        },
+        jobs: seedJobs,
+        selectedJobId: seedJobs[0].id
+      };
+      ensureResumeLibrary(initial);
+      return initial;
+    }
+
+    function ensureResumeLibrary(data = state) {
+      data.profile = data.profile || {};
+      if (!Array.isArray(data.profile.resumes) || !data.profile.resumes.length) {
+        const id = crypto.randomUUID();
+        data.profile.resumes = [{
+          id,
+          name: data.profile.resumeFileName || "默认简历",
+          resume: data.profile.resume || "",
+          projects: data.profile.projects || "",
+          fileName: data.profile.resumeFileName || "",
+          fileType: data.profile.resumeFileType || "",
+          previewText: data.profile.resumePreviewText || "",
+          previewKind: data.profile.resumePreviewKind || "",
+          previewUrl: data.profile.resumePreviewUrl || ""
+        }];
+        data.profile.activeResumeId = id;
+      }
+      if (!data.profile.activeResumeId || !data.profile.resumes.some((resume) => resume.id === data.profile.activeResumeId)) {
+        data.profile.activeResumeId = data.profile.resumes[0].id;
+      }
+      data.jobs = (data.jobs || []).map((job) => ({
+        ...job,
+        resumeId: job.resumeId || data.profile.activeResumeId
+      }));
+    }
+
+    function activeResume() {
+      ensureResumeLibrary();
+      return state.profile.resumes.find((resume) => resume.id === state.profile.activeResumeId) || state.profile.resumes[0];
+    }
+
+    function resumeForJob(job = currentJob()) {
+      ensureResumeLibrary();
+      const resumeId = job?.resumeId || state.profile.activeResumeId;
+      return state.profile.resumes.find((resume) => resume.id === resumeId) || activeResume();
+    }
+
+    function profileForJob(job = currentJob()) {
+      const resume = resumeForJob(job);
+      return {
+        ...state.profile,
+        resume: resume.resume || "",
+        projects: resume.projects || "",
+        resumeFileName: resume.fileName || resume.name || "",
+        activeResumeName: resume.name || "默认简历"
+      };
+    }
+
+    function persist() {
+      state.selectedJobId = selectedJobId;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    async function refreshApiHealth() {
+      try {
+        const response = await fetch("/api/health");
+        apiHealth = await response.json();
+      } catch (error) {
+        apiHealth = { ok: false, error: error.message };
+      }
+      renderApiStatus();
+    }
+
+    function renderApiStatus() {
+      const node = $("api-status");
+      if (!node) return;
+      if (!apiHealth) {
+        node.innerHTML = `<strong>API 状态</strong><span class="muted">正在检查...</span>`;
+        return;
+      }
+      const connected = apiHealth.ok && (apiHealth.hasDeepSeekKey || apiHealth.hasOpenAIKey);
+      node.innerHTML = `<strong>API 状态</strong><span class="muted">${connected ? `DeepSeek 已连接 · ${apiHealth.model || "默认模型"}` : `未连接：${apiHealth.error || "未读取到 API Key"}`}</span>`;
+    }
+
+    function setAnalysisProgress(percent, text) {
+      $("analysis-progress").classList.add("active");
+      $("analysis-progress-bar").style.width = `${percent}%`;
+      $("analysis-progress-value").textContent = `${percent}%`;
+      $("analysis-progress-text").textContent = text;
+    }
+
+    function resetAnalysisProgress() {
+      window.clearInterval(progressTimer);
+      progressTimer = null;
+      $("analysis-progress").classList.remove("active");
+      $("analysis-progress-bar").style.width = "0%";
+      $("analysis-progress-value").textContent = "0%";
+      $("analysis-progress-text").textContent = "准备开始分析";
+    }
+
+    function startAnalysisProgress() {
+      analysisRunning = true;
+      let value = 8;
+      const steps = [
+        "正在解析 JD...",
+        "正在匹配个人资料...",
+        "正在识别面试风险...",
+        "正在生成准备方案..."
+      ];
+      setAnalysisProgress(value, steps[0]);
+      window.clearInterval(progressTimer);
+      progressTimer = window.setInterval(() => {
+        value = Math.min(value + Math.floor(Math.random() * 10) + 5, 88);
+        const stepIndex = value < 30 ? 0 : value < 55 ? 1 : value < 75 ? 2 : 3;
+        setAnalysisProgress(value, steps[stepIndex]);
+      }, 520);
+    }
+
+    function finishAnalysisProgress(success = true) {
+      window.clearInterval(progressTimer);
+      progressTimer = null;
+      setAnalysisProgress(100, success ? "分析完成" : "已使用本地兜底完成");
+      window.setTimeout(() => {
+        analysisRunning = false;
+        resetAnalysisProgress();
+        renderModuleButtons(currentJob());
+      }, 650);
+    }
+
+    function setModuleProgress(key, percent, text) {
+      moduleProgress[key] = { percent, text };
+      const bar = document.querySelector(`[data-module-progress-bar="${key}"]`);
+      const value = document.querySelector(`[data-module-progress-value="${key}"]`);
+      const label = document.querySelector(`[data-module-progress-text="${key}"]`);
+      if (bar) bar.style.width = `${percent}%`;
+      if (value) value.textContent = `${percent}%`;
+      if (label) label.textContent = text;
+    }
+
+    function startModuleProgress(key) {
+      moduleRunningKey = key;
+      let value = 8;
+      setModuleProgress(key, value, "正在调用 AI 分析...");
+      window.clearInterval(moduleProgressTimer);
+      moduleProgressTimer = window.setInterval(() => {
+        value = Math.min(value + Math.floor(Math.random() * 12) + 6, 90);
+        const text = value < 45 ? "正在读取 JD 和简历..." : value < 75 ? "正在组织结构化结论..." : "正在整理可读结果...";
+        setModuleProgress(key, value, text);
+      }, 460);
+      renderModuleButtons(currentJob());
+    }
+
+    function finishModuleProgress(key, text = "生成完成") {
+      window.clearInterval(moduleProgressTimer);
+      moduleProgressTimer = null;
+      setModuleProgress(key, 100, text);
+      window.setTimeout(() => {
+        moduleRunningKey = null;
+        delete moduleProgress[key];
+        renderModuleButtons(currentJob());
+      }, 500);
+    }
+
+    function $(id) { return document.getElementById(id); }
+    function currentJob() { return state.jobs.find((job) => job.id === selectedJobId) || state.jobs[0]; }
+    function escapeHtml(value = "") {
+      return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+
+    function activate(tab) {
+      document.querySelectorAll("[data-tab]").forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
+      document.querySelectorAll(".page").forEach((page) => page.classList.toggle("active", page.id === tab));
+      $("page-title").textContent = pageMeta[tab][0];
+      $("page-desc").textContent = pageMeta[tab][1];
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (tab === "analysis") {
+        renderAnalysis();
+        window.setTimeout(() => forceRenderArchivedModules(currentJob()), 0);
+        return;
+      }
+      render();
+    }
+
+    function saveJobFromForm(options = {}) {
+      const shouldRender = options.render !== false;
+      const shouldToast = options.toast !== false;
+      const job = currentJob();
+      if (!job) return;
+      job.company = $("job-company").value.trim() || "未命名公司";
+      job.title = $("job-title-input").value.trim() || "未命名岗位";
+      job.type = $("job-type").value;
+      job.status = $("job-status").value;
+      job.channel = $("job-channel").value;
+      job.date = $("job-date").value;
+      job.resumeId = $("job-resume").value || state.profile.activeResumeId;
+      job.link = $("job-link").value.trim();
+      job.jd = $("job-jd").value.trim();
+      const referencesInput = $("analysis-references");
+      if (referencesInput) job.researchReferences = referencesInput.value.trim();
+      job.todos = job.todos?.length ? job.todos : ["分析 JD", "生成准备卡", "面试后复盘"];
+      persist();
+      if (shouldRender) render();
+      if (shouldToast) showToast("岗位已保存");
+    }
+
+    function selectJob(jobId, tab = null) {
+      if (!state.jobs.some((job) => job.id === jobId)) return;
+      selectedJobId = jobId;
+      persist();
+      if (tab) activate(tab);
+      else render();
+    }
+
+    function newJob() {
+      const job = {
+        id: crypto.randomUUID(),
+        company: "新公司",
+        title: "新岗位",
+        type: "AI 产品",
+        status: "已保存",
+        channel: "官网",
+        date: "",
+        link: "",
+        jd: "",
+        todos: ["粘贴 JD", "分析 JD", "生成准备卡"],
+        review: {}
+      };
+      state.jobs.unshift(job);
+      selectedJobId = job.id;
+      persist();
+      activate("jobs");
+      showToast("已新建岗位");
+    }
+
+    function deleteJob() {
+      const job = currentJob();
+      if (!job) return;
+      const confirmed = window.confirm(`确认删除「${job.company} - ${job.title}」吗？删除后无法恢复。`);
+      if (!confirmed) return;
+      state.jobs = state.jobs.filter((item) => item.id !== selectedJobId);
+      selectedJobId = state.jobs[0]?.id || null;
+      persist();
+      render();
+      showToast("岗位已删除");
+    }
+
+    function inferJobFieldsFromJD(text) {
+      const source = String(text || "").replace(/\r/g, "\n");
+      const lines = source.split("\n").map((line) => line.trim()).filter(Boolean);
+      const firstLines = lines.slice(0, 12);
+      const joined = firstLines.join(" ");
+      const companyMatch = joined.match(/(?:公司|企业|雇主|Company)[:：]\s*([^\s｜|，,]{2,30})/i)
+        || joined.match(/([A-Za-z0-9\u4e00-\u9fa5]{2,30})(?:招聘|直招|校招|社招)/);
+      const titleMatch = joined.match(/(?:岗位|职位|Job Title|Position)[:：]\s*([^｜|，,\n]{2,40})/i)
+        || joined.match(/招聘\s*([^｜|，,\n]{2,40})/)
+        || firstLines.find((line) => /(产品|PM|实习|Intern|经理|运营|数据|AI|Agent|LLM)/i.test(line));
+      const lower = source.toLowerCase();
+      let type = "其他";
+      if (/agent|llm|大模型|人工智能|ai|prompt|rag|智能体/.test(lower)) type = "AI 产品";
+      else if (/数据|指标|sql|分析|bi|实验|增长/.test(lower)) type = "数据产品";
+      else if (/b端|saas|后台|平台|企业|商家|crm/.test(lower)) type = "B 端产品";
+      else if (/增长|转化|留存|拉新|裂变/.test(lower)) type = "增长产品";
+      else if (/运营|内容|社区|用户运营/.test(lower)) type = "产品运营";
+
+      return {
+        company: companyMatch ? cleanExtractedField(companyMatch[1]) : "",
+        title: titleMatch ? cleanExtractedField(Array.isArray(titleMatch) ? titleMatch[1] || titleMatch[0] : titleMatch) : "",
+        type
+      };
+    }
+
+    function cleanExtractedField(value) {
+      return String(value || "")
+        .replace(/^(岗位|职位|招聘|公司|企业|Company|Job Title|Position)[:：\s]*/i, "")
+        .replace(/[｜|，,].*$/, "")
+        .trim()
+        .slice(0, 40);
+    }
+
+    function applyJDInference(force = false) {
+      const jdText = $("job-jd").value;
+      if (!jdText.trim()) {
+        $("jd-parse-status").textContent = "请先粘贴 JD 原文";
+        return;
+      }
+      const inferred = inferJobFieldsFromJD(jdText);
+      let changed = 0;
+      if ((force || !$("job-company").value.trim() || $("job-company").value === "新公司") && inferred.company) {
+        $("job-company").value = inferred.company;
+        changed += 1;
+      }
+      if ((force || !$("job-title-input").value.trim() || $("job-title-input").value === "新岗位") && inferred.title) {
+        $("job-title-input").value = inferred.title;
+        changed += 1;
+      }
+      if (inferred.type && inferred.type !== "其他") {
+        $("job-type").value = inferred.type;
+        changed += 1;
+      }
+      $("jd-parse-status").textContent = changed ? `已识别：${[inferred.company, inferred.title, inferred.type].filter(Boolean).join(" / ")}` : "未识别到明确字段，可手动补充";
+    }
+
+    function handleJDImageUpload(file) {
+      const preview = $("jd-image-preview");
+      if (!file) {
+        preview.style.display = "none";
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      preview.style.display = "block";
+      preview.innerHTML = `<div class="brief-item"><strong>JD 图片预览</strong><span class="muted">已上传 ${escapeHtml(file.name)}。当前 DeepSeek 文本接口不支持图片 OCR，后续可接 OCR/视觉模型自动提取文字。</span></div><img alt="JD 图片预览" src="${url}" style="width:100%;max-height:360px;object-fit:contain;background:#fff;border:0;" />`;
+      $("jd-parse-status").textContent = "图片已上传并预览；图片文字识别需要接 OCR/视觉模型";
+    }
+
+    const KEYWORDS = {
+      ai: ["ai", "大模型", "llm", "agent", "rag", "prompt", "智能", "算法", "模型", "自动化"],
+      data: ["数据", "指标", "分析", "ab", "a/b", "实验", "sql", "增长"],
+      user: ["用户", "体验", "调研", "反馈", "场景", "需求"],
+      business: ["业务", "商业", "内容", "社区", "创作者", "b端", "saas", "平台"],
+      delivery: ["推进", "协作", "落地", "项目", "迭代", "跨团队"]
+    };
+
+    function hitKeywords(text, keywordMap = KEYWORDS) {
+      const source = String(text || "").toLowerCase();
+      return Object.fromEntries(Object.entries(keywordMap).map(([key, list]) => [key, list.filter((word) => source.includes(word))]));
+    }
+
+    function jdParserSkill(job) {
+      const text = `${job.title} ${job.type} ${job.jd}`;
+      const hits = hitKeywords(text);
+      const roleType = hits.ai.length ? "AI 产品 / 智能应用" : hits.data.length ? "数据 / 增长产品" : hits.business.length ? "业务 / 平台产品" : "产品 / 运营";
+      const coreTasks = [
+        hits.ai.length ? "定义 AI 功能链路与模型协作边界" : "拆解用户场景并定义产品需求",
+        hits.user.length ? "基于用户反馈和场景持续迭代体验" : "将岗位目标拆成可落地的产品任务",
+        hits.delivery.length ? "与算法、工程、设计等角色跨团队协作" : "维护项目节奏和交付质量"
+      ];
+      const requiredSkills = [
+        hits.ai.length ? "LLM / Agent / Prompt 基础理解" : "产品需求分析",
+        hits.data.length ? "数据分析与指标意识" : "用户问题抽象",
+        hits.delivery.length ? "跨团队推进" : "清晰表达和项目推进"
+      ];
+      const bonusSkills = [
+        hits.business.length ? "相关业务场景理解" : "快速业务研究能力",
+        hits.ai.length ? "AI 评估与 badcase 迭代意识" : "结构化问题拆解能力"
+      ];
+      return {
+        roleType,
+        coreTasks,
+        requiredSkills,
+        bonusSkills,
+        businessKeywords: hits.business,
+        aiKeywords: hits.ai,
+        dataKeywords: hits.data,
+        rawKeywordHits: hits
+      };
+    }
+
+    function profileExtractorSkill(profile) {
+      const text = `${profile.target || ""} ${profile.industry || ""} ${profile.resume || ""} ${profile.projects || ""}`;
+      const hits = hitKeywords(text);
+      const coreProjects = (profile.projects || "")
+        .split(/\n|；|;/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 4);
+      return {
+        targetRoles: (profile.target || "待填写").split(/、|,|，/).map((item) => item.trim()).filter(Boolean),
+        targetIndustries: (profile.industry || "待填写").split(/、|,|，/).map((item) => item.trim()).filter(Boolean),
+        coreProjects: coreProjects.length ? coreProjects : ["CareerPilot AI 求职作战台"],
+        productSignals: hits.user.concat(hits.delivery),
+        aiSignals: hits.ai,
+        dataSignals: hits.data,
+        businessSignals: hits.business,
+        rawKeywordHits: hits
+      };
+    }
+
+    function fitAnalyzerSkill(jdProfile, userProfile) {
+      const jdHits = jdProfile.rawKeywordHits;
+      const profileHits = userProfile.rawKeywordHits;
+      const overlap = Object.keys(KEYWORDS).flatMap((key) => jdHits[key].filter((word) => profileHits[key].includes(word)));
+      const score = Math.min(95, 56 + Object.values(jdHits).flat().length * 4 + overlap.length * 5 + userProfile.coreProjects.length * 2);
+      const strongMatches = [
+        jdHits.ai.length && userProfile.aiSignals.length ? "AI 产品关键词匹配，可重点讲工作流、eval、badcase" : "",
+        jdHits.user.length && userProfile.productSignals.length ? "用户场景和产品推进能力有匹配素材" : "",
+        jdHits.data.length && userProfile.dataSignals.length ? "数据分析/指标意识有可迁移表达" : ""
+      ].filter(Boolean);
+      const transferableMatches = [
+        "CareerPilot AI 可作为 AI 产品项目主案例",
+        "求职流程本身可映射为复杂任务拆解和状态管理问题"
+      ];
+      const gaps = [
+        jdHits.business.length && !userProfile.businessSignals.length ? "业务场景素材不足，需要补公司/行业案例" : "",
+        jdHits.data.length && !userProfile.dataSignals.length ? "数据指标表达偏弱，需要准备评估口径" : "",
+        jdHits.ai.length && !userProfile.aiSignals.length ? "AI 方法表达不足，需要补 LLM/Agent/eval 基础讲法" : ""
+      ].filter(Boolean);
+      return {
+        score,
+        strongMatches: strongMatches.length ? strongMatches : ["岗位要求和现有经历存在可迁移关系，但需要更明确的项目映射"],
+        transferableMatches,
+        gaps: gaps.length ? gaps : ["主要风险不是硬缺能力，而是表达是否足够具体"],
+        recommendedProjects: userProfile.coreProjects
+      };
+    }
+
+    function riskDiagnoserSkill(jdProfile, fit) {
+      const questions = [
+        "为什么这个场景需要 AI，而不是普通模板或表格？",
+        "你会如何评估 AI 输出是否真的有帮助？",
+        jdProfile.businessKeywords.length ? "你对这个业务场景的理解有哪些具体例子？" : "如果岗位业务很陌生，你如何快速补齐上下文？",
+        "出现泛化、幻觉或建议不可执行时，你会改哪个链路节点？"
+      ];
+      const boundaries = [
+        "不要声称真实上线、增长或 A/B test，除非有证据。",
+        "不要把本地规则 demo 说成完整模型训练或算法优化。",
+        "可以说设计了工作流、字段结构、eval 口径和 badcase 迭代。"
+      ];
+      return {
+        likelyQuestions: questions,
+        riskPoints: fit.gaps,
+        boundaries,
+        missingEvidence: ["真实 JD eval 样本", "badcase 记录", "准备建议可执行性评分"]
+      };
+    }
+
+    function prepPlannerSkill(job, jdProfile, fit, risk) {
+      const prepSuggestions = [
+        "准备一个项目故事：问题 -> 工作流 -> eval -> badcase -> 迭代。",
+        jdProfile.aiKeywords.length ? "重点讲 AI 产品可靠性，而不是只讲生成能力。" : "重点讲用户场景、需求优先级和落地推进。",
+        jdProfile.businessKeywords.length ? "补 3 个该行业具体业务场景。" : "补公司主营业务、用户和竞品。",
+        "准备 1 分钟自我介绍，并把经历映射到 JD 关键词。"
+      ];
+      return {
+        todoList: prepSuggestions,
+        oneMinuteIntroAngle: `围绕「${job.title}」强调：我能把复杂求职任务拆成 JD 解析、个人匹配、风险诊断和准备规划，并用 eval/badcase 迭代输出质量。`,
+        interviewBrief: [
+          `公司 / 岗位：${job.company} - ${job.title}`,
+          `核心准备：${jdProfile.coreTasks[0]}`,
+          `主讲项目：${fit.recommendedProjects[0] || "CareerPilot AI"}`,
+          `风险提醒：不要只说“AI 生成”，要讲清楚评估标准和失败案例`
+        ],
+        prepSuggestions
+      };
+    }
+
+    function analyzeJob(job = currentJob()) {
+      if (!job) return null;
+      const jdProfile = jdParserSkill(job);
+      const userProfile = profileExtractorSkill(profileForJob(job));
+      const fit = fitAnalyzerSkill(jdProfile, userProfile);
+      const risk = riskDiagnoserSkill(jdProfile, fit);
+      const planner = prepPlannerSkill(job, jdProfile, fit, risk);
+      const focused = buildFocusedAnalysis(job, {
+        roleType: jdProfile.roleType,
+        coreTasks: jdProfile.coreTasks,
+        requiredSkills: jdProfile.requiredSkills,
+        riskQuestions: risk.likelyQuestions,
+        prepSuggestions: planner.prepSuggestions,
+        score: fit.score,
+        workflow: {
+          jdParser: jdProfile,
+          profileMatcher: { userProfile, fit },
+          riskDiagnoser: risk,
+          prepPlanner: planner
+        }
+      });
+      job.analysis = {
+        generatedAt: new Date().toISOString(),
+        provider: "local",
+        roleType: jdProfile.roleType,
+        coreTasks: jdProfile.coreTasks,
+        requiredSkills: jdProfile.requiredSkills,
+        riskQuestions: risk.likelyQuestions,
+        prepSuggestions: planner.prepSuggestions,
+        score: fit.score,
+        jdHits: jdProfile.rawKeywordHits,
+        profileHits: userProfile.rawKeywordHits,
+        workflow: {
+          jdParser: jdProfile,
+          profileMatcher: { userProfile, fit },
+          riskDiagnoser: risk,
+          prepPlanner: planner
+        },
+        focused
+      };
+      return job.analysis;
+    }
+
+    function buildFocusedAnalysis(job, analysis) {
+      const workflow = analysis.workflow || {};
+      const jd = workflow.jdParser || {
+        roleType: analysis.roleType || job.type,
+        coreTasks: analysis.coreTasks || [],
+        requiredSkills: analysis.requiredSkills || [],
+        bonusSkills: [],
+        businessKeywords: [],
+        aiKeywords: [],
+        dataKeywords: []
+      };
+      const fit = workflow.profileMatcher?.fit || {
+        score: analysis.score || 0,
+        strongMatches: [],
+        transferableMatches: [],
+        gaps: [],
+        recommendedProjects: ["CareerPilot AI"]
+      };
+      const risk = workflow.riskDiagnoser || {
+        likelyQuestions: analysis.riskQuestions || [],
+        riskPoints: [],
+        boundaries: [],
+        missingEvidence: []
+      };
+      const planner = workflow.prepPlanner || {
+        todoList: analysis.prepSuggestions || [],
+        oneMinuteIntroAngle: "围绕岗位要求讲清楚业务理解、项目匹配和可验证结果。",
+        interviewBrief: [],
+        prepSuggestions: analysis.prepSuggestions || []
+      };
+      const priority = analysis.score >= 80 ? "高" : analysis.score >= 65 ? "中" : "低";
+      const fitLevel = analysis.score >= 80 ? "强匹配" : analysis.score >= 65 ? "可冲" : "需要补强";
+      return {
+        summary: {
+          roleType: jd.roleType || analysis.roleType || job.type,
+          priority,
+          fitLevel,
+          prepFocus: fit.gaps?.[0] || risk.riskPoints?.[0] || "把项目表达和 JD 要求对齐"
+        },
+        jobUnderstanding: {
+          roleSummary: `这是一个偏「${jd.roleType || job.type}」的岗位，核心不是复述 JD，而是判断你能否围绕业务场景定义产品任务并推动落地。`,
+          companyPositioning: job.company ? `${job.company} 的具体公司定位需要结合官网、产品线和招聘页面补充；当前先基于 JD 判断岗位所在业务与产品任务。` : "公司定位信息不足，需要先补公司名称和主营业务。",
+          businessContext: jd.businessKeywords?.length ? `业务关键词集中在：${jd.businessKeywords.join("、")}。准备时要说明这些业务为什么需要对应产品能力。` : "JD 里的业务信息不够具体，需要你主动补公司主营业务、用户和产品场景。",
+          targetUsers: jd.businessKeywords?.length ? jd.businessKeywords.slice(0, 4) : ["目标用户待从公司业务补充"],
+          likelyResponsibilities: jd.coreTasks || []
+        },
+        capabilityRequirements: {
+          mustHave: jd.requiredSkills || [],
+          niceToHave: jd.bonusSkills || [],
+          hiddenExpectations: [
+            "能把模糊需求拆成可执行功能",
+            "能解释为什么这样设计，而不是只描述做了什么",
+            "能用指标、样本或 badcase 说明迭代方法"
+          ]
+        },
+        personalStrategy: {
+          mainProject: fit.recommendedProjects?.[0] || "CareerPilot AI",
+          recommendedFraming: planner.oneMinuteIntroAngle || "从真实痛点、工作流拆解、评估标准和迭代讲起。",
+          advantages: fit.strongMatches || [],
+          gaps: fit.gaps || [],
+          avoidSaying: risk.boundaries || []
+        },
+        prepFocus: {
+          thirtyMinutePlan: (planner.todoList || []).slice(0, 3),
+          twoHourPlan: [
+            "补一页公司业务：用户、场景、产品目标、可能指标",
+            "准备一个项目 badcase：现象、原因、改法、复测指标",
+            "把主讲项目改写成贴合该 JD 的 1 分钟版本",
+            "准备 3 个高风险追问的回答"
+          ],
+          likelyQuestions: risk.likelyQuestions || []
+        },
+        applicationMaterials: {
+          coverLetter: buildCoverLetter(job, jd, fit, planner),
+          selfIntroduction: buildSelfIntroduction(job, jd, fit, planner)
+        }
+      };
+    }
+
+    function buildCoverLetter(job, jdProfile, fit, planner) {
+      const project = fit.recommendedProjects?.[0] || "CareerPilot AI";
+      return `您好，\n我对贵司「${job.title}」岗位非常感兴趣。结合 JD 理解，该岗位核心关注 ${jdProfile.roleType || job.type} 场景下的产品规划、需求拆解与落地评估。\n\n我目前重点准备的项目是「${project}」。这个项目从真实海投痛点出发，将非结构化 JD 转化为岗位理解、个人匹配、风险诊断和准备计划，能够体现我对 AI 产品工作流、评估标准和 badcase 迭代的理解。\n\n我希望有机会进一步沟通，也很期待结合贵司业务场景贡献自己的产品分析、AI 应用理解和执行推进能力。\n\n感谢您的时间，期待回复。`;
+    }
+
+    function buildSelfIntroduction(job, jdProfile, fit, planner) {
+      const project = fit.recommendedProjects?.[0] || "CareerPilot AI";
+      return `您好，我正在申请「${job.company} - ${job.title}」。我希望重点强调自己在 AI 产品工作流设计和复杂任务拆解上的能力。\n\n我最近做的核心项目是「${project}」，围绕求职海投场景，将 JD 解析、个人经历匹配、风险诊断和准备规划串成一个完整工作流。这个项目让我更系统地理解了 AI 产品中任务定义、结构化输出、评估标准和 badcase 迭代的重要性。\n\n结合这个岗位，我会重点展示自己如何理解业务场景、拆解用户任务，并将 AI 能力转化为可落地的产品方案。`;
+    }
+
+    async function analyzeJobWithApi(job = currentJob()) {
+      if (!job) return null;
+      const response = await fetch("/api/analyze-job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job: {
+            company: job.company,
+            title: job.title,
+            type: job.type,
+            status: job.status,
+            channel: job.channel,
+            date: job.date,
+            link: job.link,
+            jd: job.jd
+          },
+          profile: profileForJob(job)
+        })
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || `API 请求失败：${response.status}`);
+      }
+      const data = await response.json();
+      job.analysis = data.analysis && typeof data.analysis === "object" ? data.analysis : { rawText: String(data.analysis || "") };
+      job.analysis.generatedAt = new Date().toISOString();
+      job.analysis.provider = data.provider || "api";
+      job.analysis.focused = normalizeFocusedAnalysis(job.analysis.focused || buildFocusedAnalysis(job, job.analysis));
+      job.prep = null;
+      return job.analysis;
+    }
+
+    async function analyzeRoleUnderstandingWithApi(job = currentJob()) {
+      if (!job) return null;
+      const response = await fetch("/api/role-understanding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job: {
+            company: job.company,
+            title: job.title,
+            type: job.type,
+            status: job.status,
+            channel: job.channel,
+            link: job.link,
+            jd: job.jd
+          },
+          references: job.researchReferences || $("analysis-references")?.value.trim() || ""
+        })
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || `岗位理解请求失败：${response.status}`);
+      }
+      const data = await response.json();
+      const skill = data.roleUnderstanding || {};
+      const focused = roleUnderstandingToFocused(skill, job);
+      job.analysis = {
+        ...(job.analysis || {}),
+        generatedAt: new Date().toISOString(),
+        provider: data.provider || "api",
+        score: job.analysis?.score || 0,
+        focused: {
+          ...(job.analysis?.focused || normalizeFocusedAnalysis({})),
+          jobUnderstanding: focused.jobUnderstanding,
+          summary: focused.summary
+        }
+      };
+      job.roleUnderstandingSkill = skill;
+      return { analysis: job.analysis, roleUnderstanding: skill, focused };
+    }
+
+    function getSelfIntroOptions(job = currentJob()) {
+      return {
+        scene: $("self-intro-scene")?.value || job?.selfIntroOptions?.scene || "业务面",
+        length: $("self-intro-length")?.value || job?.selfIntroOptions?.length || "60秒"
+      };
+    }
+
+    function selfIntroductionScript(skill, options = {}) {
+      if (!skill) return "";
+      const length = options.length || skill.length || "60秒";
+      return skill.versions?.[length] || skill.script || skill.versions?.["60秒"] || "";
+    }
+
+    async function analyzeSelfIntroductionWithApi(job = currentJob()) {
+      if (!job) return null;
+      const options = getSelfIntroOptions(job);
+      job.selfIntroOptions = options;
+      const response = await fetch("/api/self-introduction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job: {
+            company: job.company,
+            title: job.title,
+            type: job.type,
+            status: job.status,
+            channel: job.channel,
+            link: job.link,
+            jd: job.jd
+          },
+          profile: profileForJob(job),
+          roleUnderstanding: job.roleUnderstandingSkill || job.analysisModules?.jobUnderstanding?.roleUnderstanding || null,
+          options
+        })
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || `自我介绍请求失败：${response.status}`);
+      }
+      const data = await response.json();
+      const skill = data.selfIntroduction || {};
+      const focused = normalizeFocusedAnalysis(job.analysis?.focused || {});
+      focused.applicationMaterials.selfIntroduction = selfIntroductionScript(skill, options);
+      job.analysis = {
+        ...(job.analysis || {}),
+        generatedAt: new Date().toISOString(),
+        provider: data.provider || "api",
+        score: job.analysis?.score || 0,
+        focused
+      };
+      job.selfIntroductionSkill = skill;
+      return { analysis: job.analysis, selfIntroduction: skill, focused };
+    }
+
+    function buildLocalSelfIntroductionSkill(job = currentJob()) {
+      const options = getSelfIntroOptions(job);
+      const profile = profileForJob(job);
+      const role = job?.roleUnderstandingSkill?.rolePositioning?.oneSentence || job?.analysis?.focused?.jobUnderstanding?.roleSummary || `${job.company} 的 ${job.title}`;
+      const resumeText = profile.resume || "";
+      const evidence = [];
+      if (resumeText.includes("Loopit")) evidence.push("Loopit AI 推荐策略产品实习");
+      if (resumeText.includes("RAG")) evidence.push("RAG 知识发现系统");
+      if (resumeText.includes("知识图谱")) evidence.push("LLM + 知识图谱推荐项目");
+      const selectedEvidence = (evidence.length ? evidence : ["当前绑定简历中的 AI/产品项目"]).slice(0, 3).map((item) => ({
+        resumeEvidence: item,
+        jobRelevance: "用于证明对 AI 产品链路、规则设计、任务拆解和效果验证有真实理解",
+        talkingPoint: `围绕「${item}」讲清问题、方案、验证和可迁移到该岗位的能力`
+      }));
+      const script60 = `面试官您好，我正在申请「${job.company} - ${job.title}」。我的核心特点是，既有 AI 和数据相关项目经验，也习惯用产品视角拆解复杂系统里的任务、规则和验证问题。\n\n结合这个岗位，我理解它的重点不是简单写需求，而是要在「${role}」这个业务命题下，把模糊需求拆成可执行的产品机制，并持续验证它是否真的有用。\n\n我过去比较相关的经历包括${selectedEvidence.map((item) => item.resumeEvidence).join("、")}。这些经历让我对 AI 产品里的信息组织、规则设计、效果评估和 badcase 迭代更敏感。\n\n我投递这个岗位，是希望把这些能力用在更真实、更复杂的业务场景里，参与从问题定义到产品落地的完整过程。谢谢。`;
+      return {
+        scene: options.scene,
+        length: options.length,
+        roleDemand: "证明自己能把 AI/产品/业务问题结构化，并用真实经历支撑岗位匹配",
+        positioning: "有 AI 与数据项目经验、能用产品视角拆解复杂系统的候选人",
+        selectedEvidence,
+        motivation: `希望参与 ${job.company} 的真实业务问题，从问题定义、规则设计到产品落地形成闭环。`,
+        script: script60,
+        versions: {
+          "30秒": script60.split("\n\n").slice(0, 2).join("\n\n"),
+          "60秒": script60,
+          "90秒": `${script60}\n\n如果进一步展开，我会重点讲一个项目：我如何识别问题、设计规则或链路、用数据/案例验证效果，以及这个过程如何迁移到贵司岗位。`
+        },
+        riskBoundaries: ["本地兜底版本没有完整理解简历细节，生成后需要手动核验经历表述", "不要补充简历中没有出现的指标或商业结果"],
+        followUpQuestions: ["你具体做了哪部分？", "这个项目如何验证效果？", "你如何把这段经历迁移到我们岗位？"]
+      };
+    }
+
+    function roleUnderstandingToFocused(skill, job = currentJob()) {
+      const likelyWork = toArray(skill.likelyWork).map((item) => typeof item === "string" ? item : `${item.task || ""}${item.businessMeaning ? `：${item.businessMeaning}` : ""}${item.deliverable ? `（交付：${item.deliverable}）` : ""}`);
+      return normalizeFocusedAnalysis({
+        summary: {
+          roleType: job.type || job.title || "岗位类型待判断",
+          priority: "中",
+          fitLevel: "待结合简历判断",
+          prepFocus: skill.industryPrimer?.mustKnowTerms?.[0] || "先补公司主营业务和岗位业务链路"
+        },
+        jobUnderstanding: {
+          roleSummary: skill.rolePositioning?.oneSentence || skill.companyBusiness?.summary || "需要结合 JD 和公司资料判断岗位作用。",
+          companyPositioning: `${skill.companyBusiness?.summary || "公司主营业务待核验"}${skill.companyBusiness?.businessModel ? `；商业/价值创造方式：${skill.companyBusiness.businessModel}` : ""}`,
+          businessContext: `${skill.rolePositioning?.whyNeeded || ""}${skill.businessMap?.workflows?.length ? ` 业务流程：${skill.businessMap.workflows.join("；")}` : ""}`.trim(),
+          targetUsers: skill.businessMap?.businessObjects || [],
+          likelyResponsibilities: likelyWork
+        }
+      });
+    }
+
+    function generatePrep(job = currentJob()) {
+      if (!job) return null;
+      const analysis = job.analysis || analyzeJob(job);
+      job.prep = {
+        goal: `证明我能胜任「${job.title}」：不仅理解岗位要求，也能把 AI/产品任务拆成可执行工作流。`,
+        intro: `我最近在做 CareerPilot AI 求职作战台，把海投中的岗位追踪、JD 拆解、面试准备和复盘串成闭环。这个项目能对应 ${job.company} 对 ${analysis.roleType} 的要求，我会重点讲任务拆解、输出评估和 badcase 迭代。`,
+        brief: [
+          `公司 / 岗位：${job.company} - ${job.title}`,
+          `核心准备：${analysis.coreTasks[0]}`,
+          `主讲项目：CareerPilot AI 的 JD 解析、匹配分析和面试速览`,
+          `风险提醒：不要只说“AI 生成”，要讲清楚评估标准和失败案例`
+        ],
+        questions: analysis.riskQuestions
+      };
+      return job.prep;
+    }
+
+    function saveProfile() {
+      ensureResumeLibrary();
+      const resume = activeResume();
+      state.profile.target = $("profile-target").value.trim();
+      state.profile.industry = $("profile-industry").value.trim();
+      resume.name = $("profile-resume-name").value.trim() || resume.name || "未命名简历";
+      resume.resume = $("profile-resume").value.trim();
+      resume.projects = $("profile-projects").value.trim();
+      state.profile.resume = resume.resume;
+      state.profile.projects = resume.projects;
+      state.profile.resumeFileName = resume.fileName || resume.name;
+      persist();
+      render();
+      showToast("资料库已保存");
+    }
+
+    function saveAsNewResumeVersion() {
+      ensureResumeLibrary();
+      const id = crypto.randomUUID();
+      const name = $("profile-resume-name").value.trim() || `简历版本 ${state.profile.resumes.length + 1}`;
+      state.profile.resumes.push({
+        id,
+        name,
+        resume: $("profile-resume").value.trim(),
+        projects: $("profile-projects").value.trim(),
+        fileName: state.profile.resumeFileName || name,
+        fileType: state.profile.resumeFileType || "",
+        previewText: state.profile.resumePreviewText || "",
+        previewKind: state.profile.resumePreviewKind || "",
+        previewUrl: state.profile.resumePreviewUrl || ""
+      });
+      state.profile.activeResumeId = id;
+      persist();
+      render();
+      showToast("已保存为新简历版本");
+    }
+
+    function resumeUsageCount(resumeId) {
+      return state.jobs.filter((job) => job.resumeId === resumeId).length;
+    }
+
+    function selectResumeVersion(resumeId) {
+      ensureResumeLibrary();
+      if (!state.profile.resumes.some((resume) => resume.id === resumeId)) return;
+      state.profile.activeResumeId = resumeId;
+      persist();
+      render();
+    }
+
+    function deleteResumeVersion(resumeId) {
+      ensureResumeLibrary();
+      const resume = state.profile.resumes.find((item) => item.id === resumeId);
+      if (!resume) return;
+      if (state.profile.resumes.length <= 1) {
+        showToast("至少保留一份简历");
+        return;
+      }
+      const used = resumeUsageCount(resumeId);
+      if (used > 0) {
+        showToast(`这份简历被 ${used} 个岗位使用，请先更换岗位绑定`);
+        return;
+      }
+      const confirmed = window.confirm(`确认删除简历版本「${resume.name || resume.fileName || "未命名简历"}」吗？`);
+      if (!confirmed) return;
+      state.profile.resumes = state.profile.resumes.filter((item) => item.id !== resumeId);
+      if (state.profile.activeResumeId === resumeId) {
+        state.profile.activeResumeId = state.profile.resumes[0].id;
+      }
+      persist();
+      render();
+      showToast("简历版本已删除");
+    }
+
+    function bindResumeToCurrentJob(resumeId) {
+      const job = currentJob();
+      if (!job) return;
+      job.resumeId = resumeId;
+      job.analysis = null;
+      job.analysisModules = {};
+      job.analysisVisibleModules = defaultAnalysisModules(false);
+      job.prep = null;
+      persist();
+      render();
+      showToast("岗位绑定简历已更新，旧分析已清空");
+    }
+
+    function saveReview() {
+      const job = currentJob();
+      if (!job) return;
+      job.review = {
+        questions: $("review-questions").value.trim(),
+        notes: $("review-notes").value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+      persist();
+      render();
+      showToast("复盘已保存");
+    }
+
+    function renderJobList() {
+      const list = $("job-list");
+      const jobs = currentStatusFilter === "全部" ? state.jobs : state.jobs.filter((job) => job.status === currentStatusFilter || (currentStatusFilter === "已结束" && ["Offer", "已拒绝", "已结束"].includes(job.status)));
+      list.innerHTML = jobs.length ? jobs.map((job) => {
+        const hasArchivedModules = Object.keys(job.analysisModules || {}).length > 0;
+        const analysis = job.analysis?.generatedAt ? job.analysis : (hasArchivedModules ? Object.values(job.analysisModules)[0].analysis : null);
+        return `<div class="job ${job.id === selectedJobId ? "active" : ""}" data-job-id="${job.id}">
+          <div class="job-head"><div><strong>${escapeHtml(job.company)}</strong><small>${escapeHtml(job.title)}</small></div><span class="tag ${job.status === "面试中" ? "green" : "blue"}">${escapeHtml(job.status)}</span></div>
+          <div class="muted">${job.date ? formatDate(job.date) : "暂无时间"} · ${analysis ? `匹配 ${analysis.score}` : "未分析"}</div>
+        </div>`;
+      }).join("") : `<div class="empty">没有符合筛选条件的岗位</div>`;
+      list.querySelectorAll("[data-job-id]").forEach((item) => {
+        item.addEventListener("click", () => {
+          selectJob(item.dataset.jobId);
+        });
+      });
+    }
+
+    function renderJobForm() {
+      const job = currentJob();
+      if (!job) return;
+      ensureResumeLibrary();
+      $("job-company").value = job.company || "";
+      $("job-title-input").value = job.title || "";
+      $("job-type").value = job.type || "AI 产品";
+      $("job-status").value = job.status || "已保存";
+      $("job-channel").value = job.channel || "官网";
+      $("job-date").value = job.date || "";
+      $("job-resume").innerHTML = renderResumeOptions(job.resumeId || state.profile.activeResumeId);
+      $("job-link").value = job.link || "";
+      $("job-jd").value = job.jd || "";
+      $("job-bound-resume").textContent = resumeForJob(job)?.name || "默认简历";
+      $("job-bound-resume-select").innerHTML = renderResumeOptions(job.resumeId || state.profile.activeResumeId);
+      $("job-next-actions").innerHTML = (job.todos || []).map((todo) => `<div class="todo"><span class="box"></span>${escapeHtml(todo)}</div>`).join("") || `<div class="empty">保存岗位后生成下一步动作</div>`;
+    }
+
+    function renderDashboard() {
+      const total = state.jobs.length;
+      const applied = state.jobs.filter((job) => job.status === "已投递").length;
+      const interview = state.jobs.filter((job) => job.status === "面试中").length;
+      const todo = state.jobs.reduce((sum, job) => sum + (job.todos?.length || 0), 0);
+      $("metric-total").textContent = total;
+      $("metric-applied").textContent = applied;
+      $("metric-interview").textContent = interview;
+      $("metric-todo").textContent = todo;
+      $("week-interviews").textContent = `本周 ${interview} 场面试`;
+      $("dashboard-jobs").innerHTML = state.jobs.slice(0, 4).map((job) => {
+        const archivedModules = job.analysisModules || {};
+        const firstArchivedAnalysis = Object.values(archivedModules).find((item) => item?.analysis)?.analysis || null;
+        const analysis = job.analysis?.generatedAt ? job.analysis : firstArchivedAnalysis;
+        return `<div class="job" data-dash-job="${job.id}">
+          <div class="job-head"><div><strong>${escapeHtml(job.company)}</strong><small>${escapeHtml(job.title)}</small></div><span class="tag green">${analysis ? `匹配 ${analysis.score}` : "未分析"}</span></div>
+          <div class="muted">${job.date ? formatDate(job.date) : "暂无时间"} · ${escapeHtml(job.status)}</div>
+        </div>`;
+      }).join("") || `<div class="empty">还没有岗位，先新增一个吧</div>`;
+      $("dashboard-risks").innerHTML = [
+        ["项目表达风险", "不要只讲“用了 AI”，要讲工作流、评估和 badcase。"],
+        ["业务理解风险", "不同岗位需要补不同业务案例，避免准备材料泛化。"],
+        ["技术边界风险", "能讲产品判断即可，不要夸大模型或工程 ownership。"],
+        ["下一步建议", "优先处理最近面试和截止时间最近的测评。"]
+      ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${text}</span></div>`).join("");
+      const todos = state.jobs.flatMap((job) => (job.todos || []).map((todo) => ({ todo, job }))).slice(0, 6);
+      $("dashboard-todos").innerHTML = todos.length ? todos.map(({ todo, job }) => `<div class="todo"><span class="box"></span>${escapeHtml(todo)} <span class="muted">· ${escapeHtml(job.company)}</span></div>`).join("") : `<div class="empty">暂无待办</div>`;
+      document.querySelectorAll("[data-dash-job]").forEach((item) => {
+        item.addEventListener("click", () => selectJob(item.dataset.dashJob, "jobs"));
+      });
+    }
+
+    function renderProfile() {
+      ensureResumeLibrary();
+      const resume = activeResume();
+      $("profile-target").value = state.profile.target || "";
+      $("profile-industry").value = state.profile.industry || "";
+      $("profile-resume-select").innerHTML = renderResumeOptions(state.profile.activeResumeId);
+      $("profile-resume-name").value = resume.name || "";
+      $("profile-resume").value = resume.resume || "";
+      $("profile-projects").value = resume.projects || "";
+      const text = `${resume.resume} ${resume.projects}`;
+      const hasAI = /AI|大模型|LLM|Agent|RAG|Prompt|eval|badcase/i.test(text);
+      const hasData = /数据|指标|分析|SQL|A\/B|实验/i.test(text);
+      $("profile-summary").innerHTML = [
+        ["目标岗位", state.profile.target || "待填写"],
+        ["目标行业", state.profile.industry || "待填写"],
+        ["简历文件", resume.fileName || resume.name || "未上传"],
+        ["简历解析", resume.resume ? `已解析 ${resume.resume.length} 字，可用于 JD 匹配` : resume.parseStatus === "pending" ? "解析中" : resume.parseStatus === "failed" ? `解析失败：${resume.parseError || "未知错误"}` : "未解析正文"],
+        ["可强调能力", hasAI ? "AI 工作流、Prompt Chain、eval、badcase" : "产品拆解、用户场景、项目推进"],
+        ["待补能力", hasData ? "补充真实项目指标口径" : "补充数据指标、评估样本和量化口径"]
+      ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${escapeHtml(text)}</span></div>`).join("");
+      $("experience-table").innerHTML = buildExperienceRows(resume).map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+      renderResumePreview();
+      renderResumeVersionList();
+    }
+
+    function buildExperienceRows(resume) {
+      const text = `${resume.resume || ""}\n${resume.projects || ""}`.trim();
+      if (!text) {
+        if (resume.parseStatus === "pending") {
+          return [["正在解析简历", "请稍等，解析完成后自动更新", "解析成功后会抽取经历素材"]];
+        }
+        if (resume.parseStatus === "failed") {
+          return [["简历解析失败", resume.parseError || "未知错误", "可重新上传 PDF/DOCX，或手动粘贴简历正文"]];
+        }
+        return [
+          ["暂无简历正文", "请上传并解析 PDF/DOCX，或粘贴简历文本", "有正文后会自动抽取经历素材"]
+        ];
+      }
+      const lines = text
+        .split(/\n|。|；|;/)
+        .map((line) => line.replace(/\s+/g, " ").trim())
+        .filter((line) => line.length >= 8);
+      const scored = lines.map((line) => {
+        let score = 0;
+        if (/实习|项目|负责|参与|主导|搭建|设计|优化|分析|推动|协作/.test(line)) score += 2;
+        if (/AI|大模型|LLM|Agent|RAG|Prompt|评测|模型|算法|推荐|治理/i.test(line)) score += 2;
+        if (/数据|指标|SQL|Python|A\/B|实验|看板|监控|分析/.test(line)) score += 1;
+        if (/\d|%|提升|降低|增长|覆盖|样本/.test(line)) score += 1;
+        return { line, score };
+      }).sort((a, b) => b.score - a.score).slice(0, 6);
+      const rows = scored.length ? scored : [{ line: text.slice(0, 90), score: 0 }];
+      return rows.map(({ line }) => {
+        const matchTags = [];
+        if (/AI|大模型|LLM|Agent|RAG|Prompt|评测|模型|算法/i.test(line)) matchTags.push("AI 产品 / 模型评测");
+        if (/数据|指标|SQL|Python|A\/B|实验|看板|监控/.test(line)) matchTags.push("数据分析 / 指标体系");
+        if (/用户|需求|调研|体验|增长|转化/.test(line)) matchTags.push("用户需求 / 产品体验");
+        if (/协作|推进|落地|项目管理|跨部门/.test(line)) matchTags.push("项目推进 / 跨团队协作");
+        return [
+          line.length > 90 ? `${line.slice(0, 90)}...` : line,
+          matchTags.length ? matchTags.join("、") : "产品分析 / 项目表达",
+          buildExperienceAngle(line)
+        ];
+      });
+    }
+
+    function buildExperienceAngle(line) {
+      if (/评测|badcase|样本|模型/.test(line)) return "强调评估标准、样本构建、badcase 归因和迭代闭环。";
+      if (/指标|数据|SQL|看板|监控/.test(line)) return "强调如何定义指标、定位问题，并用数据支持产品判断。";
+      if (/需求|用户|调研|体验/.test(line)) return "强调从用户场景出发拆解需求，而不是只描述执行动作。";
+      if (/协作|推动|落地|项目管理/.test(line)) return "强调跨团队推进、优先级判断和交付结果。";
+      return "面试时补充背景、你的动作、判断依据和可验证结果。";
+    }
+
+    function renderResumeVersionList() {
+      ensureResumeLibrary();
+      $("resume-version-list").innerHTML = state.profile.resumes.map((resume) => {
+        const active = resume.id === state.profile.activeResumeId;
+        const used = resumeUsageCount(resume.id);
+        const name = resume.name || resume.fileName || "未命名简历";
+        const parseMeta = resume.resume ? `已解析：${resume.resume.length} 字` : resume.parseStatus === "failed" ? "解析失败" : "未解析正文";
+        const meta = [
+          resume.fileName ? `文件：${resume.fileName}` : "手动文本",
+          parseMeta,
+          `绑定岗位：${used}`
+        ].join(" · ");
+        return `<div class="job ${active ? "active" : ""}" data-resume-card="${resume.id}">
+          <div class="job-head">
+            <div><strong>${escapeHtml(name)}</strong><small>${escapeHtml(meta)}</small></div>
+            <span class="tag ${active ? "green" : "blue"}">${active ? "当前预览" : "可选择"}</span>
+          </div>
+          <div class="actions">
+            <button data-select-resume="${resume.id}">查看</button>
+            <button class="danger" data-delete-resume="${resume.id}" ${used > 0 || state.profile.resumes.length <= 1 ? "disabled" : ""}>删除</button>
+          </div>
+        </div>`;
+      }).join("");
+      $("resume-version-list").querySelectorAll("[data-select-resume]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          selectResumeVersion(button.dataset.selectResume);
+        });
+      });
+      $("resume-version-list").querySelectorAll("[data-delete-resume]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          deleteResumeVersion(button.dataset.deleteResume);
+        });
+      });
+      $("resume-version-list").querySelectorAll("[data-resume-card]").forEach((card) => {
+        card.addEventListener("click", () => selectResumeVersion(card.dataset.resumeCard));
+      });
+    }
+
+    function renderResumeOptions(selectedId) {
+      ensureResumeLibrary();
+      return state.profile.resumes.map((resume) => `<option value="${resume.id}" ${resume.id === selectedId ? "selected" : ""}>${escapeHtml(resume.name || resume.fileName || "未命名简历")}</option>`).join("");
+    }
+
+    function renderResumePreview() {
+      const preview = $("resume-preview");
+      const status = $("resume-preview-status");
+      const resume = activeResume();
+      const fileName = resume.fileName || resume.name;
+      if (!fileName) {
+        if (resume.resume) {
+          status.textContent = "文本预览";
+          preview.innerHTML = `<pre>${escapeHtml(resume.resume)}</pre>`;
+          return;
+        }
+        status.textContent = "未上传";
+        preview.innerHTML = `<div class="empty">还没有上传简历。上传 PDF、DOC/DOCX 或 TXT/MD 后会在这里显示预览。</div>`;
+        return;
+      }
+      if (resume.parseStatus === "pending") {
+        status.textContent = "解析中";
+        preview.innerHTML = `<div class="empty">正在解析「${escapeHtml(fileName)}」正文。解析完成后，这里会显示正文，并同步更新经历素材库。</div>`;
+        return;
+      }
+      if (resume.parseStatus === "failed") {
+        status.textContent = "解析失败";
+        preview.innerHTML = `<div class="empty">已上传「${escapeHtml(fileName)}」，但正文解析失败：${escapeHtml(resume.parseError || "未知错误")}。你可以重新上传 PDF/DOCX，或把简历正文粘贴到左侧文本框后保存。</div>`;
+        return;
+      }
+      status.textContent = resume.resume ? `已解析 ${resume.resume.length} 字` : fileName;
+      if (resume.previewText || resume.resume) {
+        preview.innerHTML = `<div class="brief-item" style="margin:10px;"><strong>已解析正文，将用于 JD 匹配</strong><span class="muted">${escapeHtml(fileName)} · ${String(resume.resume || resume.previewText || "").length} 字</span></div><pre>${escapeHtml(resume.previewText || resume.resume)}</pre>`;
+        return;
+      }
+      if (resume.previewKind === "pdf" && resume.previewUrl) {
+        preview.innerHTML = `<iframe title="简历 PDF 预览" src="${resume.previewUrl}"></iframe>`;
+        return;
+      }
+      preview.innerHTML = `<div class="empty">已上传：${escapeHtml(fileName)}。DOC/DOCX 正文预览需要后续接入解析器；你可以把简历文本粘贴到左侧文本框，当前版本会用于岗位匹配。</div>`;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+        reader.onerror = () => reject(reader.error || new Error("文件读取失败"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function parseResumeFile(file) {
+      const data = await fileToBase64(file);
+      const response = await fetch("/api/parse-resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type || "",
+          data
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || `简历解析失败：${response.status}`);
+      }
+      return result;
+    }
+
+    const analysisModuleMeta = {
+      jobUnderstanding: "岗位理解",
+      capabilityRequirements: "能力要求",
+      personalStrategy: "匹配策略",
+      prepFocus: "准备重点",
+      coverLetter: "Cover Letter",
+      selfIntroduction: "自我介绍"
+    };
+
+    function defaultAnalysisModules(value = false) {
+      return Object.fromEntries(Object.keys(analysisModuleMeta).map((key) => [key, value]));
+    }
+
+    function visibleAnalysisModules(job) {
+      const archived = Object.fromEntries(Object.keys(job.analysisModules || {}).map((key) => [key, true]));
+      return { ...defaultAnalysisModules(false), ...(job.analysisVisibleModules || {}), ...archived };
+    }
+
+    function generatedModuleLabels(visible) {
+      const labels = Object.entries(visible).filter(([, value]) => value).map(([key]) => analysisModuleMeta[key]);
+      return labels.length ? labels.join("、") : "暂未展开";
+    }
+
+    function hasAnyVisibleModule(visible) {
+      return Object.values(visible).some(Boolean);
+    }
+
+    function moduleEmpty(title, text) {
+      return `<div class="empty"><strong style="display:block;margin-bottom:6px;color:var(--text);">${escapeHtml(title)}待生成</strong>${escapeHtml(text)}</div>`;
+    }
+
+    function renderEmptyAnalysisModules() {
+      $("job-understanding").innerHTML = moduleEmpty("岗位理解", "生成后会展示：岗位做什么、公司/业务定位、可能服务对象和核心职责。");
+      $("capability-requirements").innerHTML = moduleEmpty("能力要求", "生成后会展示：硬性能力、加分项、面试官没有写在 JD 里的隐性考点。");
+      $("personal-strategy").innerHTML = moduleEmpty("匹配策略", "生成后会展示：该用哪段经历匹配、怎么讲、哪些表达要避开。");
+      $("prep-focus").innerHTML = moduleEmpty("准备重点", "生成后会展示：面试前 30 分钟、2 小时深度准备和高概率问题。");
+      $("cover-letter").innerHTML = moduleEmpty("Cover Letter", "生成后会基于当前岗位和所选简历，给你一段投递时可改写的话。");
+      $("self-introduction").innerHTML = moduleEmpty("自我介绍", "生成后会给出一版面试开场/HR 沟通可用的自我介绍。");
+    }
+
+    function renderModuleButtons(job) {
+      const visible = visibleAnalysisModules(job);
+      document.querySelectorAll("[data-module-card]").forEach((card) => {
+        const key = card.dataset.moduleCard;
+        card.classList.toggle("running", moduleRunningKey === key);
+        const currentProgress = moduleProgress[key] || { percent: 0, text: "准备生成" };
+        setModuleProgress(key, currentProgress.percent, currentProgress.text);
+      });
+      document.querySelectorAll("[data-generate-module]").forEach((button) => {
+        const key = button.dataset.generateModule;
+        button.disabled = analysisRunning || Boolean(moduleRunningKey);
+        button.textContent = moduleRunningKey === key ? "生成中" : visible[key] ? "重新生成" : "生成";
+      });
+    }
+
+    function moduleInputScope(key, job = currentJob()) {
+      const resume = resumeForJob(job);
+      const resumeChars = (resume?.resume || "").length;
+      const jdOnly = ["jobUnderstanding", "capabilityRequirements"].includes(key);
+      if (jdOnly) return "输入：JD";
+      return resumeChars ? `输入：JD + 简历（${resumeChars} 字）` : "输入：JD + 简历（当前简历正文为空）";
+    }
+
+    function archiveAnalysisModule(job, key) {
+      if (!job?.analysis) return;
+      job.analysisModules = job.analysisModules || {};
+      job.analysisModules[key] = {
+        generatedAt: new Date().toISOString(),
+        provider: job.analysis.provider || "api",
+        analysis: job.analysis,
+        focused: normalizeFocusedAnalysis(job.analysis.focused || buildFocusedAnalysis(job, job.analysis)),
+        roleUnderstanding: key === "jobUnderstanding" ? job.roleUnderstandingSkill || null : null,
+        selfIntroduction: key === "selfIntroduction" ? job.selfIntroductionSkill || null : null,
+        options: key === "selfIntroduction" ? job.selfIntroOptions || getSelfIntroOptions(job) : null
+      };
+      job.analysisVisibleModules = { ...visibleAnalysisModules(job), [key]: true };
+    }
+
+    function archiveAllAnalysisModules(job) {
+      Object.keys(analysisModuleMeta).forEach((key) => archiveAnalysisModule(job, key));
+    }
+
+    function moduleAnalysis(job, key) {
+      const archived = job?.analysisModules?.[key];
+      if (archived?.analysis) return archived.analysis;
+      return job?.analysis || null;
+    }
+
+    function forceRenderArchivedModules(job = currentJob()) {
+      Object.keys(job?.analysisModules || {}).forEach((key) => forceRenderAnalysisModule(key, job));
+      renderModuleButtons(job);
+    }
+
+    function forceRenderAnalysisModule(key, job = currentJob()) {
+      const analysis = moduleAnalysis(job, key);
+      if (!analysis) return;
+      const archivedFocused = job?.analysisModules?.[key]?.focused;
+      const focused = normalizeFocusedAnalysis(archivedFocused || analysis.focused || buildFocusedAnalysis(job, analysis));
+      if (key === "jobUnderstanding") {
+        const skill = job?.analysisModules?.jobUnderstanding?.roleUnderstanding || job?.roleUnderstandingSkill;
+        $("job-understanding").innerHTML = skill ? renderRoleUnderstandingSkill(skill, focused) : `
+          <p class="brief-text">${escapeHtml(focused.jobUnderstanding.roleSummary)}</p>
+          <div class="brief-item"><strong>公司定位理解</strong><span class="muted">${escapeHtml(focused.jobUnderstanding.companyPositioning)}</span></div>
+          <div class="brief-item"><strong>业务背景</strong><span class="muted">${escapeHtml(focused.jobUnderstanding.businessContext)}</span></div>
+          ${renderNumbered("可能负责的工作", focused.jobUnderstanding.likelyResponsibilities)}
+        `;
+      }
+      if (key === "capabilityRequirements") {
+        $("capability-requirements").innerHTML = `
+          ${renderNumbered("必须准备", focused.capabilityRequirements.mustHave)}
+          ${renderNumbered("加分准备", focused.capabilityRequirements.niceToHave)}
+          ${renderNumbered("隐藏考点", focused.capabilityRequirements.hiddenExpectations)}
+        `;
+      }
+      if (key === "personalStrategy") {
+        $("personal-strategy").innerHTML = `
+          <div class="brief-item"><strong>主讲项目</strong><span class="muted">${escapeHtml(focused.personalStrategy.mainProject)}</span></div>
+          <div class="brief-item"><strong>推荐讲法</strong><span class="muted">${escapeHtml(focused.personalStrategy.recommendedFraming)}</span></div>
+          ${renderNumbered("优势", focused.personalStrategy.advantages)}
+          ${renderNumbered("短板", focused.personalStrategy.gaps)}
+        `;
+      }
+      if (key === "prepFocus") {
+        $("prep-focus").innerHTML = `
+          ${renderNumbered("30 分钟必做", focused.prepFocus.thirtyMinutePlan)}
+          ${renderNumbered("2 小时深度准备", focused.prepFocus.twoHourPlan)}
+          ${renderNumbered("高概率面试问题", focused.prepFocus.likelyQuestions)}
+        `;
+      }
+      if (key === "coverLetter") {
+        $("cover-letter").innerHTML = `<div class="brief-item"><strong>Cover Letter 草稿</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:13px;line-height:1.65;color:var(--muted);">${escapeHtml(focused.applicationMaterials.coverLetter || "暂无")}</pre></div>`;
+      }
+      if (key === "selfIntroduction") {
+        const skill = job?.analysisModules?.selfIntroduction?.selfIntroduction || job?.selfIntroductionSkill;
+        $("self-introduction").innerHTML = skill
+          ? renderSelfIntroductionSkill(skill, job?.analysisModules?.selfIntroduction?.options || job?.selfIntroOptions || {})
+          : `<div class="brief-item"><strong>自我介绍草稿</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:13px;line-height:1.65;color:var(--muted);">${escapeHtml(focused.applicationMaterials.selfIntroduction || "暂无")}</pre></div>`;
+      }
+      $("workflow-summary").innerHTML = [
+        ["当前结论", `${focused.summary.roleType} / ${focused.summary.fitLevel} / 准备优先级 ${focused.summary.priority}`],
+        ["分析来源", analysis.provider === "local" ? "本地工作流兜底" : "DeepSeek API"],
+        ["输入范围", moduleInputScope(key, job)],
+        ["结果状态", `${analysisModuleMeta[key]}已直接写入页面`],
+        ["结果体积", `${JSON.stringify(analysis).length} 字符`]
+      ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${escapeHtml(text)}</span></div>`).join("");
+      $("workflow-trace").textContent = JSON.stringify({ focused, analysis }, null, 2);
+    }
+
+    function renderRoleUnderstandingSkill(skill, focused) {
+      const links = toArray(skill.sourceLinks).map((item) => typeof item === "string" ? { title: item, url: item } : item);
+      const likelyWork = toArray(skill.likelyWork).map((item) => {
+        if (typeof item === "string") return item;
+        return `${item.task || ""}${item.businessMeaning ? `：${item.businessMeaning}` : ""}${item.deliverable ? `（交付：${item.deliverable}）` : ""}`;
+      });
+      return `
+        <p class="brief-text">${escapeHtml(skill.rolePositioning?.oneSentence || focused.jobUnderstanding.roleSummary)}</p>
+        <div class="brief-item"><strong>公司主营业务</strong><span class="muted">${escapeHtml(skill.companyBusiness?.summary || focused.jobUnderstanding.companyPositioning)}</span></div>
+        <div class="brief-item"><strong>商业/业务模式理解</strong><span class="muted">${escapeHtml(skill.companyBusiness?.businessModel || "待结合官网、新闻和业务资料继续核验。")}</span></div>
+        <div class="brief-item"><strong>岗位在公司的作用/占位</strong><span class="muted">${escapeHtml(`${skill.rolePositioning?.orgLocation || ""}${skill.rolePositioning?.whyNeeded ? `：${skill.rolePositioning.whyNeeded}` : ""}` || focused.jobUnderstanding.businessContext)}</span></div>
+        <div class="brief-item"><strong>涉及的业务对象</strong>${renderChips(skill.businessMap?.businessObjects || focused.jobUnderstanding.targetUsers)}</div>
+        ${renderNumbered("涉及的业务流程", skill.businessMap?.workflows || [])}
+        ${renderNumbered("可能接触的数据 / 系统", skill.businessMap?.dataAndSystems || [])}
+        ${renderNumbered("可能负责的工作", likelyWork)}
+        ${renderNumbered("面试前必须补的业务知识", skill.industryPrimer?.mustKnowTerms || [])}
+        ${renderNumbered("继续调研的问题", skill.industryPrimer?.questionsToResearch || [])}
+        ${renderNumbered("可主动表达的业务理解角度", skill.industryPrimer?.interviewAngles || [])}
+        <div class="brief-item"><strong>参考链接 / 搜索建议</strong>${
+          links.length
+            ? `<ol class="compact-list">${links.map((link, index) => `<li><span class="number-dot">${index + 1}</span><span>${link.url ? `<a href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.title || link.url)}</a>` : escapeHtml(link.title || "参考资料")}<br><span class="muted">${escapeHtml([link.type, link.confidence, link.note].filter(Boolean).join(" · "))}</span></span></li>`).join("")}</ol>`
+            : `<span class="muted">暂无。可在上方「公司/业务参考资料」粘贴官网或新闻链接后重新生成。</span>`
+        }</div>
+      `;
+    }
+
+    function renderSelfIntroductionSkill(skill, options = {}) {
+      const selectedScript = selfIntroductionScript(skill, options);
+      const evidence = toArray(skill.selectedEvidence).map((item) => {
+        if (typeof item === "string") return item;
+        return `${item.resumeEvidence || "经历证据"}：${item.jobRelevance || ""}${item.talkingPoint ? `；讲法：${item.talkingPoint}` : ""}`;
+      });
+      return `
+        <div class="brief-item"><strong>岗位最想听什么</strong><span class="muted">${escapeHtml(skill.roleDemand || "需要证明岗位匹配度和真实经历。")}</span></div>
+        <div class="brief-item"><strong>候选人定位句</strong><span class="muted">${escapeHtml(skill.positioning || "待结合简历生成。")}</span></div>
+        ${renderNumbered("选中的经历证据", evidence)}
+        <div class="brief-item"><strong>投递 / 面试动机</strong><span class="muted">${escapeHtml(skill.motivation || "待结合公司业务补充。")}</span></div>
+        <div class="brief-item"><strong>${escapeHtml(skill.scene || options.scene || "面试")} · ${escapeHtml(skill.length || options.length || "60秒")} 版本</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:13px;line-height:1.7;color:var(--muted);">${escapeHtml(selectedScript || "暂无")}</pre></div>
+        ${renderNumbered("风险边界", skill.riskBoundaries || [])}
+        ${renderNumbered("可能追问", skill.followUpQuestions || [])}
+      `;
+    }
+
+    function renderAnalysis() {
+      try {
+        const job = currentJob();
+        if (!job) {
+          $("analysis-current-job").innerHTML = "暂无岗位";
+          return;
+        }
+        const archivedModules = job.analysisModules || {};
+        const firstArchivedAnalysis = Object.values(archivedModules).find((item) => item?.analysis)?.analysis || null;
+        const analysis = job.analysis?.generatedAt ? job.analysis : firstArchivedAnalysis;
+        $("start-analysis").style.display = "inline-flex";
+        const hasStoredAnalysis = Boolean(analysis);
+        $("run-analysis").style.display = hasStoredAnalysis ? "inline-flex" : "none";
+        $("save-analysis").disabled = !hasStoredAnalysis;
+        $("start-analysis").disabled = analysisRunning;
+        $("run-analysis").disabled = analysisRunning;
+        $("analysis-current-job").innerHTML = `<strong>${escapeHtml(job.company)} - ${escapeHtml(job.title)}</strong><span class="muted">状态：${escapeHtml(job.status)} · 渠道：${escapeHtml(job.channel)}</span>`;
+        $("analysis-job-select").innerHTML = state.jobs.map((item) => `<option value="${item.id}" ${item.id === selectedJobId ? "selected" : ""}>${escapeHtml(item.company)} - ${escapeHtml(item.title)}</option>`).join("");
+        $("analysis-resume-select").innerHTML = renderResumeOptions(job.resumeId || state.profile.activeResumeId);
+        $("analysis-jd").textContent = job.jd || "暂无 JD，请先在岗位管理中粘贴 JD。";
+        $("analysis-references").value = job.researchReferences || "";
+        if ($("self-intro-scene")) $("self-intro-scene").value = job.selfIntroOptions?.scene || "业务面";
+        if ($("self-intro-length")) $("self-intro-length").value = job.selfIntroOptions?.length || "60秒";
+        renderApiStatus();
+        $("analysis-results").classList.remove("hidden");
+        renderModuleButtons(job);
+        if (!analysis) {
+          $("workflow-summary").innerHTML = `<div class="empty">还没有生成分析。你可以点顶部「开始分析」一次性生成全部，也可以在下面按模块单独生成。</div>`;
+          $("analysis-hero").innerHTML = "";
+          renderEmptyAnalysisModules();
+          $("workflow-trace").textContent = "";
+          return;
+        }
+        const focused = normalizeFocusedAnalysis(analysis.focused || buildFocusedAnalysis(job, analysis));
+        const moduleFocused = (key) => {
+          const archived = job.analysisModules?.[key];
+          if (archived?.focused) return normalizeFocusedAnalysis(archived.focused);
+          const itemAnalysis = archived?.analysis || analysis;
+          return normalizeFocusedAnalysis(itemAnalysis.focused || buildFocusedAnalysis(job, itemAnalysis));
+        };
+        const rawFallback = analysis.rawText || analysis.summary || "";
+        const visible = visibleAnalysisModules(job);
+        $("workflow-summary").innerHTML = [
+          ["当前结论", `${focused.summary.roleType} / ${focused.summary.fitLevel} / 准备优先级 ${focused.summary.priority}`],
+          ["重点准备", focused.summary.prepFocus],
+          ["分析来源", analysis.provider === "local" ? "本地工作流兜底" : "DeepSeek API"],
+          ["已生成模块", generatedModuleLabels(visible)],
+          ["结果状态", hasAnyVisibleModule(visible) ? "结果已写入页面模块" : "分析已完成，尚未选择要展开的模块"],
+          ["结果体积", `${JSON.stringify(analysis).length} 字符`]
+        ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${escapeHtml(text)}</span></div>`).join("");
+        $("analysis-hero").innerHTML = `
+        <div class="verdict insight-card"><span>岗位类型</span><strong>${escapeHtml(focused.summary.roleType)}</strong></div>
+        <div class="verdict"><span>投入优先级</span><strong>${escapeHtml(focused.summary.priority)}</strong></div>
+        <div class="verdict"><span>匹配判断</span><strong>${escapeHtml(focused.summary.fitLevel)}</strong></div>
+        <div class="verdict"><span>首要准备</span><strong style="font-size:15px;line-height:1.45;">${escapeHtml(focused.summary.prepFocus)}</strong></div>
+      `;
+      const jobUnderstandingFocused = moduleFocused("jobUnderstanding");
+      $("job-understanding").innerHTML = visible.jobUnderstanding ? `
+        <p class="brief-text">${escapeHtml(jobUnderstandingFocused.jobUnderstanding.roleSummary || rawFallback || "已收到分析结果，但结构化字段不足。请点击「重新分析」再次生成。")}</p>
+        <div class="brief-item"><strong>公司定位理解</strong><span class="muted">${escapeHtml(jobUnderstandingFocused.jobUnderstanding.companyPositioning || "公司定位信息不足，需要结合官网和产品线补充。")}</span></div>
+        <div class="brief-item"><strong>业务背景</strong><span class="muted">${escapeHtml(jobUnderstandingFocused.jobUnderstanding.businessContext)}</span></div>
+        <div class="brief-item"><strong>服务对象 / 业务关键词</strong>${renderChips(jobUnderstandingFocused.jobUnderstanding.targetUsers)}</div>
+        ${renderNumbered("可能负责的工作", jobUnderstandingFocused.jobUnderstanding.likelyResponsibilities)}
+      ` : moduleEmpty("岗位理解", "生成后会展示：岗位做什么、公司/业务定位、可能服务对象和核心职责。");
+      const capabilityFocused = moduleFocused("capabilityRequirements");
+      $("capability-requirements").innerHTML = visible.capabilityRequirements ? `
+        ${renderNumbered("必须准备", capabilityFocused.capabilityRequirements.mustHave)}
+        ${renderNumbered("加分准备", capabilityFocused.capabilityRequirements.niceToHave)}
+        ${renderNumbered("隐藏考点", capabilityFocused.capabilityRequirements.hiddenExpectations)}
+      ` : moduleEmpty("能力要求", "生成后会展示：硬性能力、加分项、面试官没有写在 JD 里的隐性考点。");
+      const strategyFocused = moduleFocused("personalStrategy");
+      $("personal-strategy").innerHTML = visible.personalStrategy ? `
+        <div class="brief-item insight-card"><strong>主讲项目</strong><span class="muted">${escapeHtml(strategyFocused.personalStrategy.mainProject)}</span></div>
+        <div class="brief-item"><strong>推荐讲法</strong><span class="muted">${escapeHtml(strategyFocused.personalStrategy.recommendedFraming)}</span></div>
+        ${renderNumbered("优势", strategyFocused.personalStrategy.advantages)}
+        ${renderNumbered("短板", strategyFocused.personalStrategy.gaps)}
+        ${renderNumbered("不要这样说", strategyFocused.personalStrategy.avoidSaying)}
+      ` : moduleEmpty("匹配策略", "生成后会展示：该用哪段经历匹配、怎么讲、哪些表达要避开。");
+      const prepFocused = moduleFocused("prepFocus");
+      $("prep-focus").innerHTML = visible.prepFocus ? `
+        ${renderNumbered("30 分钟必做", prepFocused.prepFocus.thirtyMinutePlan)}
+        ${renderNumbered("2 小时深度准备", prepFocused.prepFocus.twoHourPlan)}
+        ${renderNumbered("高概率面试问题", prepFocused.prepFocus.likelyQuestions)}
+      ` : moduleEmpty("准备重点", "生成后会展示：面试前 30 分钟、2 小时深度准备和高概率问题。");
+      const coverFocused = moduleFocused("coverLetter");
+      $("cover-letter").innerHTML = visible.coverLetter ? `<div class="brief-item"><strong>Cover Letter 草稿</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:13px;line-height:1.65;color:var(--muted);">${escapeHtml(coverFocused.applicationMaterials?.coverLetter || "暂无")}</pre></div>` : moduleEmpty("Cover Letter", "生成后会基于当前岗位和所选简历，给你一段投递时可改写的话。");
+      const introFocused = moduleFocused("selfIntroduction");
+      const introSkill = job.analysisModules?.selfIntroduction?.selfIntroduction || job.selfIntroductionSkill;
+      $("self-introduction").innerHTML = visible.selfIntroduction
+        ? (introSkill ? renderSelfIntroductionSkill(introSkill, job.analysisModules?.selfIntroduction?.options || job.selfIntroOptions || {}) : `<div class="brief-item"><strong>自我介绍草稿</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:13px;line-height:1.65;color:var(--muted);">${escapeHtml(introFocused.applicationMaterials?.selfIntroduction || "暂无")}</pre></div>`)
+        : moduleEmpty("自我介绍", "生成后会按面试场景、时长、岗位理解和当前简历生成一版可直接说出口的开场。");
+      $("workflow-trace").textContent = JSON.stringify({
+        job: {
+          company: job.company,
+          title: job.title,
+          type: job.type,
+          status: job.status
+        },
+        workflow: analysis.workflow || {},
+        focused
+      }, null, 2);
+      forceRenderArchivedModules(job);
+      } catch (error) {
+        const job = currentJob();
+        const raw = job?.analysis ? JSON.stringify(job.analysis, null, 2) : "当前岗位还没有 analysis 数据。";
+        $("analysis-results").classList.remove("hidden");
+        $("workflow-summary").innerHTML = `<div class="empty">分析结果渲染失败：${escapeHtml(error.message)}。下面已显示原始结果，说明 API 是否真的返回了内容。</div>`;
+        $("analysis-hero").innerHTML = "";
+        $("job-understanding").innerHTML = `<div class="brief-item"><strong>渲染错误</strong><span class="muted">${escapeHtml(error.message)}</span></div>`;
+        $("capability-requirements").innerHTML = `<div class="brief-item"><strong>原始分析结果</strong><pre style="white-space:pre-wrap;margin:8px 0 0;font:inherit;font-size:12px;line-height:1.55;color:var(--muted);max-height:320px;overflow:auto;">${escapeHtml(raw)}</pre></div>`;
+        $("personal-strategy").innerHTML = moduleEmpty("匹配策略", "渲染失败，先查看上方原始分析结果。");
+        $("prep-focus").innerHTML = moduleEmpty("准备重点", "渲染失败，先查看上方原始分析结果。");
+        $("cover-letter").innerHTML = moduleEmpty("Cover Letter", "渲染失败，先查看上方原始分析结果。");
+        $("self-introduction").innerHTML = moduleEmpty("自我介绍", "渲染失败，先查看上方原始分析结果。");
+        $("workflow-trace").textContent = String(error.stack || error.message || error) + "\n\n" + raw;
+      }
+    }
+
+    function toArray(value) {
+      if (Array.isArray(value)) return value.filter(Boolean).map((item) => typeof item === "string" ? item : JSON.stringify(item));
+      if (value === undefined || value === null || value === "") return [];
+      if (typeof value === "string") {
+        return value.split(/\n|；|;/).map((item) => item.replace(/^[-\d.\s、]+/, "").trim()).filter(Boolean);
+      }
+      return [String(value)];
+    }
+
+    function normalizeFocusedAnalysis(focused = {}) {
+      return {
+        summary: {
+          roleType: focused.summary?.roleType || "岗位类型待判断",
+          priority: focused.summary?.priority || "中",
+          fitLevel: focused.summary?.fitLevel || "待判断",
+          prepFocus: focused.summary?.prepFocus || "先补岗位业务理解和项目表达"
+        },
+        jobUnderstanding: {
+          roleSummary: focused.jobUnderstanding?.roleSummary || "该岗位需要结合 JD 和公司业务进一步判断。",
+          companyPositioning: focused.jobUnderstanding?.companyPositioning || "公司定位信息不足，需要结合官网和产品线补充。",
+          businessContext: focused.jobUnderstanding?.businessContext || "业务背景信息不足，需要补充公司主营业务、目标用户和产品场景。",
+          targetUsers: toArray(focused.jobUnderstanding?.targetUsers),
+          likelyResponsibilities: toArray(focused.jobUnderstanding?.likelyResponsibilities)
+        },
+        capabilityRequirements: {
+          mustHave: toArray(focused.capabilityRequirements?.mustHave),
+          niceToHave: toArray(focused.capabilityRequirements?.niceToHave),
+          hiddenExpectations: toArray(focused.capabilityRequirements?.hiddenExpectations)
+        },
+        personalStrategy: {
+          mainProject: focused.personalStrategy?.mainProject || "待选择主讲项目",
+          recommendedFraming: focused.personalStrategy?.recommendedFraming || "建议围绕岗位业务、个人项目和可验证结果组织表达。",
+          advantages: toArray(focused.personalStrategy?.advantages),
+          gaps: toArray(focused.personalStrategy?.gaps),
+          avoidSaying: toArray(focused.personalStrategy?.avoidSaying)
+        },
+        prepFocus: {
+          thirtyMinutePlan: toArray(focused.prepFocus?.thirtyMinutePlan),
+          twoHourPlan: toArray(focused.prepFocus?.twoHourPlan),
+          likelyQuestions: toArray(focused.prepFocus?.likelyQuestions)
+        },
+        applicationMaterials: {
+          coverLetter: focused.applicationMaterials?.coverLetter || "",
+          selfIntroduction: focused.applicationMaterials?.selfIntroduction || ""
+        }
+      };
+    }
+
+    function renderChips(items = []) {
+      const filtered = toArray(items);
+      if (!filtered.length) return `<div class="muted">暂无明显关键词</div>`;
+      return `<div class="chip-list">${filtered.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join("")}</div>`;
+    }
+
+    function renderNumbered(title, items = []) {
+      const filtered = toArray(items);
+      if (!filtered.length) {
+        return `<div class="brief-item"><strong>${escapeHtml(title)}</strong><span class="muted">暂无</span></div>`;
+      }
+      return `<div class="brief-item"><strong>${escapeHtml(title)}</strong><ol class="compact-list">${filtered.map((item, index) => `<li><span class="number-dot">${index + 1}</span><span>${escapeHtml(item)}</span></li>`).join("")}</ol></div>`;
+    }
+
+    function renderInterview() {
+      const job = currentJob();
+      if (!job) return;
+      const prep = job.prep || generatePrep(job);
+      $("prep-card").innerHTML = [
+        ["面试目标", prep.goal],
+        ["1 分钟自我介绍方向", prep.intro],
+        ["高频追问", prep.questions.join("；")]
+      ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${escapeHtml(text)}</span></div>`).join("");
+      $("interview-brief").innerHTML = prep.brief.map((item) => `<div class="brief-item"><span class="muted">${escapeHtml(item)}</span></div>`).join("");
+      $("review-questions").value = job.review?.questions || "";
+      $("review-notes").value = job.review?.notes || "";
+      const notes = job.review?.notes || "";
+      $("review-suggestions").innerHTML = [
+        ["优势", "如果能讲清楚工作流、eval 和 badcase，AI 产品信号会比较明确。"],
+        ["薄弱点", notes.includes("业务") ? "业务场景已经暴露为短板，下一轮优先补行业案例。" : "建议主动补充业务案例，避免项目听起来只像工具 demo。"],
+        ["下一步", "把本次面试问题沉淀成下一次 Brief 的风险追问。"]
+      ].map(([title, text]) => `<div class="brief-item"><strong>${title}</strong><span class="muted">${escapeHtml(text)}</span></div>`).join("");
+    }
+
+    async function runAnalysisFlow() {
+      saveJobFromForm({ render: false, toast: false });
+      startAnalysisProgress();
+      const job = currentJob();
+      try {
+        showToast("正在调用真实 API 分析...");
+        await analyzeJobWithApi(job);
+      } catch (error) {
+        analyzeJob(job);
+        archiveAllAnalysisModules(job);
+        persist();
+        finishAnalysisProgress(false);
+        renderAnalysis();
+        Object.keys(analysisModuleMeta).forEach((key) => forceRenderAnalysisModule(key, job));
+        showToast(`API 请求失败，已用本地兜底：${error.message}`);
+        return;
+      }
+      try {
+        archiveAllAnalysisModules(job);
+        persist();
+        finishAnalysisProgress(true);
+        renderAnalysis();
+        Object.keys(analysisModuleMeta).forEach((key) => forceRenderAnalysisModule(key, job));
+        showToast("真实 API 分析已完成");
+      } catch (error) {
+        finishAnalysisProgress(true);
+        showToast(`API 已返回，但页面保存/渲染失败：${error.message}`);
+      }
+    }
+
+    async function generateAnalysisModule(key) {
+      const job = currentJob();
+      if (!job) return;
+      saveJobFromForm({ render: false, toast: false });
+      startModuleProgress(key);
+      try {
+        if (key === "jobUnderstanding") {
+          await analyzeRoleUnderstandingWithApi(job);
+        } else if (key === "selfIntroduction") {
+          await analyzeSelfIntroductionWithApi(job);
+        } else {
+          await analyzeJobWithApi(job);
+        }
+      } catch (error) {
+        if (key === "jobUnderstanding") {
+          analyzeJob(job);
+        } else if (key === "selfIntroduction") {
+          const skill = buildLocalSelfIntroductionSkill(job);
+          job.selfIntroductionSkill = skill;
+          job.selfIntroOptions = getSelfIntroOptions(job);
+          const focused = normalizeFocusedAnalysis(job.analysis?.focused || {});
+          focused.applicationMaterials.selfIntroduction = selfIntroductionScript(skill, job.selfIntroOptions);
+          job.analysis = {
+            ...(job.analysis || {}),
+            generatedAt: new Date().toISOString(),
+            provider: "local",
+            score: job.analysis?.score || 0,
+            focused
+          };
+        } else {
+          analyzeJob(job);
+        }
+        archiveAnalysisModule(job, key);
+        persist();
+        moduleRunningKey = null;
+        forceRenderAnalysisModule(key, job);
+        forceRenderArchivedModules(job);
+        finishModuleProgress(key, "已用本地兜底生成");
+        showToast(`API 请求失败，已用本地兜底：${error.message}`);
+        return;
+      }
+      try {
+        archiveAnalysisModule(job, key);
+        persist();
+        moduleRunningKey = null;
+        forceRenderAnalysisModule(key, job);
+        forceRenderArchivedModules(job);
+        finishModuleProgress(key, "生成完成");
+        showToast(`${analysisModuleMeta[key]}已生成`);
+      } catch (error) {
+        finishModuleProgress(key, "API 已返回");
+        showToast(`API 已返回，但页面保存/渲染失败：${error.message}`);
+      }
+    }
+
+    function render() {
+      renderDashboard();
+      renderJobList();
+      renderJobForm();
+      renderProfile();
+      renderAnalysis();
+      renderInterview();
+    }
+
+    function formatDate(value) {
+      if (!value) return "暂无时间";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    }
+
+    document.querySelectorAll("[data-tab]").forEach((button) => {
+      button.addEventListener("click", () => activate(button.dataset.tab));
+    });
+    document.querySelectorAll("[data-jump]").forEach((button) => {
+      button.addEventListener("click", () => activate(button.dataset.jump));
+    });
+    $("top-new-job").addEventListener("click", newJob);
+    $("new-job").addEventListener("click", newJob);
+    $("save-job").addEventListener("click", saveJobFromForm);
+    $("delete-job").addEventListener("click", deleteJob);
+    $("start-analysis").addEventListener("click", runAnalysisFlow);
+    $("run-analysis").addEventListener("click", runAnalysisFlow);
+    document.querySelectorAll("[data-generate-module]").forEach((button) => {
+      button.addEventListener("click", () => generateAnalysisModule(button.dataset.generateModule));
+    });
+    $("save-analysis").addEventListener("click", () => {
+      const job = currentJob();
+      analyzeJob(job);
+      archiveAllAnalysisModules(job);
+      persist();
+      render();
+      showToast("分析结果已保存");
+    });
+    $("copy-trace").addEventListener("click", async () => {
+      const text = $("workflow-trace").textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("工作流 JSON 已复制");
+      } catch (error) {
+        showToast("复制失败，可以手动选中复制");
+      }
+    });
+    $("generate-prep").addEventListener("click", () => {
+      analyzeJob();
+      generatePrep();
+      persist();
+      render();
+      showToast("准备内容已生成");
+    });
+    $("save-profile").addEventListener("click", saveProfile);
+    $("new-resume-version").addEventListener("click", saveAsNewResumeVersion);
+    $("save-review").addEventListener("click", saveReview);
+    $("parse-jd-fields").addEventListener("click", () => applyJDInference(true));
+    $("job-jd").addEventListener("paste", () => {
+      window.setTimeout(() => applyJDInference(false), 80);
+    });
+    $("job-jd").addEventListener("input", () => {
+      window.clearTimeout(window.jdInferTimer);
+      window.jdInferTimer = window.setTimeout(() => applyJDInference(false), 500);
+    });
+    $("jd-image-file").addEventListener("change", (event) => {
+      handleJDImageUpload(event.target.files[0]);
+    });
+    $("job-resume").addEventListener("change", (event) => {
+      bindResumeToCurrentJob(event.target.value);
+    });
+    $("job-bound-resume-select").addEventListener("change", (event) => {
+      bindResumeToCurrentJob(event.target.value);
+    });
+    $("upload-trigger").addEventListener("click", () => $("resume-file").click());
+    $("resume-file").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      ensureResumeLibrary();
+      const id = crypto.randomUUID();
+      const resume = {
+        id,
+        name: file.name.replace(/\.[^.]+$/, "") || `简历版本 ${state.profile.resumes.length + 1}`,
+        resume: "",
+        projects: "",
+        fileName: file.name,
+        fileType: file.type || file.name.split(".").pop(),
+        previewText: "",
+        previewKind: "",
+        previewUrl: "",
+        parseStatus: "pending",
+        parsedCharCount: 0
+      };
+      state.profile.resumes.push(resume);
+      state.profile.activeResumeId = id;
+      resume.fileName = file.name;
+      resume.fileType = file.type || file.name.split(".").pop();
+      resume.previewText = "";
+      resume.previewKind = "";
+      resume.previewUrl = "";
+      state.profile.resumeFileName = file.name;
+      state.profile.resumeFileType = resume.fileType;
+      resume.projects = $("profile-projects").value.trim();
+      persist();
+      render();
+      if (file.name.match(/\.(txt|md)$/i)) {
+        const text = await file.text();
+        resume.previewText = text;
+        resume.resume = text;
+        resume.parseStatus = "parsed";
+        resume.parsedCharCount = text.length;
+        $("profile-resume").value = text;
+        state.profile.resume = text;
+        state.profile.projects = resume.projects;
+        persist();
+        render();
+        showToast("已新增文本简历版本，正文已用于后续匹配");
+        event.target.value = "";
+        return;
+      }
+      if (file.name.match(/\.pdf$/i)) {
+        resume.previewKind = "pdf";
+        resume.previewUrl = URL.createObjectURL(file);
+      }
+      try {
+        showToast("正在解析简历正文...");
+        const parsed = await parseResumeFile(file);
+        resume.previewText = parsed.text;
+        resume.resume = parsed.text;
+        resume.parseStatus = "parsed";
+        resume.parsedCharCount = parsed.charCount || parsed.text.length;
+        if (!resume.previewKind) resume.previewKind = parsed.kind || "text";
+        $("profile-resume").value = parsed.text;
+        state.profile.resume = parsed.text;
+        state.profile.projects = resume.projects;
+        persist();
+        render();
+        showToast(`已解析简历正文：${parsed.charCount} 字，将用于 JD 匹配`);
+      } catch (error) {
+        resume.parseStatus = "failed";
+        resume.parseError = error.message;
+        persist();
+        render();
+        showToast(`已保存文件，但正文解析失败：${error.message}`);
+      } finally {
+        event.target.value = "";
+      }
+    });
+    $("status-filters").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-status]");
+      if (!button) return;
+      currentStatusFilter = button.dataset.status;
+      document.querySelectorAll("#status-filters button").forEach((btn) => btn.classList.toggle("active", btn === button));
+      renderJobList();
+    });
+    $("analysis-job-select").addEventListener("change", (event) => {
+      selectJob(event.target.value);
+    });
+    $("analysis-resume-select").addEventListener("change", (event) => {
+      const job = currentJob();
+      if (!job) return;
+      job.resumeId = event.target.value;
+      job.analysis = null;
+      job.analysisModules = {};
+      job.analysisVisibleModules = defaultAnalysisModules(false);
+      job.prep = null;
+      persist();
+      render();
+      showToast("已切换分析简历，旧分析已清空");
+    });
+    ["self-intro-scene", "self-intro-length"].forEach((id) => {
+      $(id).addEventListener("change", () => {
+        const job = currentJob();
+        if (!job) return;
+        job.selfIntroOptions = getSelfIntroOptions(job);
+        persist();
+      });
+    });
+    $("profile-resume-select").addEventListener("change", (event) => {
+      selectResumeVersion(event.target.value);
+    });
+
+    render();
+    refreshApiHealth();
+  </script>
+</body>
+</html>

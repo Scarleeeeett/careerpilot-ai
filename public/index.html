@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CareerPilot AI</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">CP</div>
+        <div>
+          <strong>CareerPilot AI</strong>
+          <span>可评测求职 Workflow</span>
+        </div>
+      </div>
+
+      <button class="primary sidebar-new-task" data-tab="dashboard">新建求职任务</button>
+      <div class="nav-label">工作空间</div>
+      <button class="tab-btn active" data-tab="dashboard">
+        <span class="dot"></span>
+        <span><span class="tab-title">岗位分析与准备</span><span class="tab-desc">提交 JD、选择简历并开始</span></span>
+      </button>
+
+      <details class="nav-section" open>
+        <summary><span>求职项目</span><small>岗位、分析与面试</small></summary>
+        <div class="nav-children">
+          <button class="tab-btn compact" data-tab="jobs"><span class="dot"></span><span class="tab-title">项目总览</span></button>
+          <button class="tab-btn compact" data-tab="analysis"><span class="dot"></span><span class="tab-title">岗位分析</span></button>
+          <button class="tab-btn compact" data-tab="interview"><span class="dot"></span><span class="tab-title">面试复盘</span></button>
+        </div>
+      </details>
+
+      <details class="nav-section" open>
+        <summary><span>我的资料</span><small>简历与真实经历</small></summary>
+        <div class="nav-children">
+          <button class="tab-btn compact" data-tab="profile"><span class="dot"></span><span class="tab-title">资料概览</span></button>
+          <button class="tab-btn compact" data-tab="resumes"><span class="dot"></span><span class="tab-title">简历管理</span></button>
+          <button class="tab-btn compact" data-tab="experiences"><span class="dot"></span><span class="tab-title">项目经历</span></button>
+        </div>
+      </details>
+
+      <div class="sidebar-secondary">
+        <details class="nav-section">
+          <summary><span>开发者工具</span><small>Skill、Trace 与评测</small></summary>
+          <div class="nav-children">
+        <button class="tab-btn compact" data-tab="skills"><span class="dot"></span><span class="tab-title">Skill 说明</span></button>
+        <button class="tab-btn" data-tab="traces">
+          <span class="dot"></span>
+          <span><span class="tab-title">运行记录</span><span class="tab-desc">查看 Skill 调用与错误定位</span></span>
+        </button>
+        <button class="tab-btn" data-tab="evals">
+          <span class="dot"></span>
+          <span><span class="tab-title">开发评测</span><span class="tab-desc">工程回归与路由基线</span></span>
+        </button>
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">岗位分析与准备</h1>
+          <p id="page-desc">提交一份 JD 和简历，选择目标后直接开始。</p>
+        </div>
+        <div class="actions">
+          <span class="tag green">简历多版本已启用</span>
+          <button class="ghost" data-jump="resumes">导入简历</button>
+          <button class="primary" id="top-new-job">新建项目</button>
+        </div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="quick-start">
+          <header class="quick-intro">
+            <h2>把 JD 交给我，我们从目标开始</h2>
+            <p>粘贴招聘信息或描述这次机会。系统先识别岗位和材料，再请你确认需要完成的任务。</p>
+          </header>
+
+          <div class="quick-layout">
+            <div class="quick-form">
+              <div class="quick-field quick-step" id="quick-step-role">
+                <span class="quick-step-index">1</span>
+                <div class="quick-field-head"><strong>目标公司与岗位</strong><span>先确认分析对象</span></div>
+                <div class="quick-context-fields">
+                  <label class="wide">公司名称<input class="input" id="quick-company" placeholder="例如：字节跳动、阿里云、科大讯飞" /></label>
+                  <label>职类<select id="quick-role-category" aria-label="职类"></select></label>
+                  <label>岗位方向<select id="quick-role-track" aria-label="岗位方向"></select></label>
+                  <label>细分方向<select id="quick-role-specialty" aria-label="细分方向"></select></label>
+                  <label class="wide quick-role-custom" id="quick-role-custom-wrap" hidden>自定义细分方向<input class="input" id="quick-role-custom" placeholder="例如：AI 面试、智能座舱、广告策略" /></label>
+                </div>
+                <span class="quick-step-note">岗位名称由三级方向自动生成，后续可在岗位项目中调整业务线。</span>
+              </div>
+
+              <div class="quick-field quick-step" id="quick-step-jd">
+                <span class="quick-step-index">2</span>
+                <div class="quick-field-head"><strong>招聘 JD</strong><span>补充真实职责与要求</span></div>
+                <textarea id="quick-jd" class="quick-textarea" placeholder="粘贴完整 JD、岗位链接内容，或先写公司 + 岗位名称。系统会先识别公司、岗位、业务线和硬性要求。"></textarea>
+                <span class="quick-step-note">没有完整 JD 也可以先提交，但岗位行业理解会标出待补信息。</span>
+              </div>
+
+              <div class="quick-field quick-step" id="quick-step-resume">
+                <span class="quick-step-index">3</span>
+                <div class="quick-field-head"><strong>选择分析简历</strong><span>优先复用简历库中的版本</span></div>
+                <label class="quick-resume-picker">已上传的简历
+                  <select id="quick-resume-select"></select>
+                </label>
+                <input id="quick-resume-file" type="file" accept=".txt,.md,.doc,.docx,.pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+                <div class="quick-upload-row">
+                  <button type="button" id="quick-upload-trigger">上传新简历</button>
+                  <span id="quick-resume-status">没有合适版本时，可上传 PDF、Word、TXT 或 Markdown</span>
+                </div>
+                <details class="quick-resume-disclosure">
+                  <summary>临时粘贴或编辑简历正文</summary>
+                  <textarea id="quick-resume" class="quick-textarea resume" placeholder="这里的正文会覆盖上方所选版本，并保存为新的简历版本。"></textarea>
+                </details>
+              </div>
+
+              <button class="primary quick-recognize" id="quick-recognize" type="button">识别 JD 与简历</button>
+
+              <div class="quick-confirmation" id="quick-confirmation" hidden>
+                <div class="quick-context-confirmed" id="quick-context-confirmed"></div>
+              <div class="quick-field quick-step" id="quick-step-goal">
+                <span class="quick-step-index">4</span>
+                <div class="quick-field-head"><strong>求职需求</strong><span>可多选，也可编辑</span></div>
+                <div class="quick-task-grid" id="quick-task-grid">
+                  <button type="button" class="quick-task" data-quick-task="understand" aria-pressed="false"><strong>理解岗位与行业</strong><span>梳理职责、业务线、产业链和岗位决策</span></button>
+                  <button type="button" class="quick-task" data-quick-task="match" aria-pressed="false"><strong>检查匹配度</strong><span>用简历证据判断优势与缺口</span></button>
+                  <button type="button" class="quick-task selected" data-quick-task="interview" aria-pressed="true"><strong>准备面试</strong><span>预测追问并生成准备清单</span></button>
+                  <button type="button" class="quick-task" data-quick-task="message" aria-pressed="false"><strong>生成沟通文案</strong><span>产出 BOSS 开场白或求职私信</span></button>
+                </div>
+                <label class="quick-goal-editor">其他需求或编辑后的目标<input class="input" id="quick-extra" placeholder="可选，例如：重点准备业务理解和 Agent 评测，或只输出 30 分钟面试速查清单" /></label>
+                <button class="primary quick-submit" id="quick-start-task">分析材料并开始任务</button>
+              </div>
+              </div>
+            </div>
+
+            <aside class="quick-guide">
+              <h3 id="quick-guide-title">接下来怎么做</h3>
+              <p id="quick-guide-copy">先提交材料，确认识别结果后再选择任务。你不需要提前理解 Skill。</p>
+              <div class="quick-pipeline" id="quick-pipeline"></div>
+              <div class="quick-privacy">任务完成后，页面会标明实际使用的 Skill。完整调用顺序、参数摘要和耗时可在运行记录中查看。</div>
+            </aside>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="page" id="assistant">
+        <div class="shell">
+          <div class="assistant-layout">
+            <div class="assistant-composer">
+              <div class="section-head" style="margin-bottom:18px;">
+                <div>
+                  <h2>你现在想完成什么？</h2>
+                  <p class="muted">直接描述求职任务。助手会读取所选岗位与简历，自动组合需要的 Skill。</p>
+                </div>
+              </div>
+              <label>基于哪个岗位<select id="skill-job-select"></select></label>
+              <label style="margin-top:14px;">描述任务<textarea id="skill-task-query" class="assistant-input" placeholder="例如：分析这份 JD 和我的匹配度，再告诉我面试前应该准备什么">分析这份 JD 和我的匹配度，再告诉我面试前应该准备什么</textarea></label>
+              <div class="assistant-prompts" aria-label="常用任务">
+                <button data-assistant-prompt="分析这个岗位、所属行业和业务线">理解岗位与行业</button>
+                <button data-assistant-prompt="分析我的简历和这个岗位是否匹配">检查匹配度</button>
+                <button data-assistant-prompt="找出面试风险并生成准备计划">准备面试</button>
+                <button data-assistant-prompt="根据这个 JD 写一段 BOSS 直聘开场白">生成投递文案</button>
+              </div>
+              <div class="assistant-context" id="assistant-context"></div>
+              <button class="primary assistant-submit" id="run-skill-task">开始执行任务</button>
+            </div>
+            <div class="assistant-result" id="skill-run-result">
+              <div class="assistant-empty">
+                <strong>结果会显示在这里</strong>
+                <span>执行后，你会看到任务结果、使用了哪些 Skill，以及每一步为什么被调用。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="jobs">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>岗位池</h2>
+              <p class="muted">先选中一个公司和岗位，右侧只展示这个岗位的资料、准备和面试入口。</p>
+            </div>
+            <div class="actions">
+              <button id="new-job">新建空白岗位</button>
+              <button class="primary" id="save-job">保存岗位</button>
+            </div>
+          </div>
+
+          <div class="project-workspace">
+            <aside class="project-rail">
+              <div class="card">
+                <h3>公司 / 岗位</h3>
+                <div class="mini-tabs" id="status-filters">
+                  <button class="active" data-status="全部">全部</button>
+                  <button data-status="已投递">已投递</button>
+                  <button data-status="测评">测评</button>
+                  <button data-status="面试中">面试中</button>
+                  <button data-status="已结束">结束</button>
+                </div>
+              <div class="job-list" id="job-list"></div>
+              </div>
+            </aside>
+
+            <div class="project-detail">
+              <div class="project-context" id="project-current-context"></div>
+
+              <nav class="project-detail-tabs" aria-label="岗位项目内容">
+                <button class="active" data-project-panel="overview">概览</button>
+                <button data-project-panel="data">岗位资料</button>
+              </nav>
+
+              <div class="project-panel active" id="project-panel-overview" data-project-panel-content="overview">
+                <section class="project-overview-block">
+                  <div class="project-panel-heading">
+                    <div>
+                      <h3>当前阶段</h3>
+                      <p class="muted" id="project-overview-stage">根据岗位状态和最近记录生成。</p>
+                    </div>
+                    <span class="tag blue" id="project-overview-status">已保存</span>
+                  </div>
+                  <div class="project-next-action" id="project-overview-next"></div>
+                </section>
+
+                <section class="project-overview-block">
+                  <h3>岗位进度</h3>
+                  <div class="project-progress" id="project-overview-progress"></div>
+                </section>
+
+                <section class="project-overview-block">
+                  <h3>关键数据</h3>
+                  <div class="project-overview-metrics" id="project-overview-metrics"></div>
+                </section>
+
+                <section class="project-overview-actions">
+                  <button data-jump="analysis"><strong>继续准备</strong><span>查看岗位分析与准备重点</span></button>
+                  <button data-jump="interview"><strong>查看面试</strong><span>进入轮次记录与复盘</span></button>
+                  <button data-tab="assistant"><strong>交给助手</strong><span>让 Agent 自动组合 Skill</span></button>
+                </section>
+                <section class="project-overview-danger">
+                  <div>
+                    <strong>不再跟进这个岗位？</strong>
+                    <span>删除后，该岗位的分析、面试记录与复盘会一并移除。</span>
+                  </div>
+                  <button id="delete-job-overview" class="danger">删除岗位项目</button>
+                </section>
+              </div>
+
+              <div class="project-panel" id="project-panel-data" data-project-panel-content="data" hidden>
+                <div class="project-panel-heading">
+                  <div>
+                    <h3>岗位资料</h3>
+                    <p class="muted">编辑岗位基本信息、JD 和绑定简历。</p>
+                  </div>
+                </div>
+                <div class="project-data-section">
+                  <h4>基本信息</h4>
+                  <div class="form-grid">
+                    <label>公司名称<input class="input" id="job-company" /></label>
+                    <div class="role-path-field wide">
+                      <span class="field-label">岗位方向</span>
+                      <div class="role-path-selects">
+                        <label>职类<select id="job-role-category"></select></label>
+                        <label>方向<select id="job-role-track"></select></label>
+                        <label>细分<select id="job-role-specialty"></select></label>
+                      </div>
+                      <label id="job-role-custom-wrap" hidden>自定义细分方向<input class="input" id="job-role-custom" placeholder="例如：AI 面试、智能座舱、广告策略" /></label>
+                      <span class="field-help" id="job-role-path-preview">岗位名称将由所选方向自动生成</span>
+                      <input id="job-title-input" type="hidden" />
+                      <input id="job-type" type="hidden" />
+                    </div>
+                    <label>具体业务 / 产品线<input class="input" id="job-business-line" placeholder="不知道可以留空，系统会提示分支分析" /></label>
+                    <label>当前状态<select id="job-status"><option>已保存</option><option>已投递</option><option>测评</option><option>面试中</option><option>Offer</option><option>已拒绝</option><option>已结束</option></select></label>
+                    <label>投递渠道<select id="job-channel"><option>官网</option><option>LinkedIn</option><option>Boss</option><option>内推</option><option>邮箱</option><option>其他</option></select></label>
+                    <label>面试/截止时间<input class="input" id="job-date" type="datetime-local" /></label>
+                    <label>投递简历<select id="job-resume"></select></label>
+                    <label class="wide">JD 链接<input class="input" id="job-link" placeholder="https://" /></label>
+                    <label class="wide">JD 原文<textarea id="job-jd" placeholder="粘贴岗位 JD，保存后可以拆解岗位、匹配简历和准备面试"></textarea></label>
+                    <label class="wide">JD 图片上传
+                      <input class="input" id="jd-image-file" type="file" accept="image/*" />
+                    </label>
+                  </div>
+                  <div class="actions" style="margin-top: 12px;">
+                    <button id="parse-jd-fields">从 JD 自动识别字段</button>
+                    <span class="muted" id="jd-parse-status">粘贴 JD 后会尝试自动填充岗位信息</span>
+                  </div>
+                  <div class="resume-preview" id="jd-image-preview" style="display:none; margin-top: 12px;"></div>
+                </div>
+
+                <div class="project-data-section">
+                  <h4>简历与待办</h4>
+                  <div class="brief-item" style="margin-bottom: 10px;">
+                    <strong>当前绑定简历</strong>
+                    <span class="muted" id="job-bound-resume">默认简历</span>
+                  </div>
+                  <label style="margin-bottom: 12px;">更换绑定简历<select id="job-bound-resume-select"></select></label>
+                  <div id="job-next-actions"></div>
+                  <div class="actions" style="margin-top: 14px;">
+                    <button id="delete-job" class="danger">删除岗位</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="profile">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>资料概览</h2>
+              <p class="muted">查看求职目标、资料完整度，以及系统当前如何理解你。</p>
+            </div>
+            <div class="actions">
+              <button data-jump="resumes">管理简历</button>
+              <button class="primary" data-save-profile>保存目标</button>
+            </div>
+          </div>
+          <div class="profile-overview-layout">
+            <section class="profile-section">
+              <h3>求职目标</h3>
+              <div class="form-grid">
+                <label>目标岗位<input class="input" id="profile-target" placeholder="例如：AI 产品经理、数据产品" /></label>
+                <label>目标行业<input class="input" id="profile-industry" placeholder="例如：内容社区、AI 应用、SaaS" /></label>
+              </div>
+              <div class="profile-completeness" id="profile-completeness"></div>
+              <div class="profile-current-resume" id="profile-current-resume"></div>
+            </section>
+            <section class="profile-section">
+              <h3>AI 个人画像</h3>
+              <div class="grid-2" id="profile-summary"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="resumes">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>简历管理</h2>
+              <p class="muted">管理简历版本、正文和预览，并选择岗位分析使用的默认版本。</p>
+            </div>
+            <div class="actions">
+              <input id="resume-file" type="file" accept=".txt,.md,.doc,.docx,.pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+              <button id="upload-trigger">上传简历</button>
+              <button id="new-resume-version">保存为新版本</button>
+              <button class="primary" id="save-profile">保存当前版本</button>
+            </div>
+          </div>
+          <div class="resume-manager-layout">
+            <aside class="profile-section resume-version-pane">
+              <div class="profile-pane-head">
+                <h3>简历版本</h3>
+                <span class="tag blue" id="resume-version-count">0 个版本</span>
+              </div>
+              <label>当前版本<select id="profile-resume-select"></select></label>
+              <div class="job-list" id="resume-version-list"></div>
+            </aside>
+            <section class="profile-section resume-preview-pane">
+              <div class="profile-pane-head">
+                <div><h3>当前简历</h3><p class="muted">预览当前选中的简历正文或文件。</p></div>
+                <span class="tag blue" id="resume-preview-status">未上传</span>
+              </div>
+              <label>版本名称<input class="input" id="profile-resume-name" placeholder="例如：AI产品岗简历 V3" /></label>
+              <div class="resume-preview" id="resume-preview"></div>
+              <details class="resume-text-editor">
+                <summary>编辑简历正文</summary>
+                <textarea id="profile-resume" placeholder="粘贴简历文本。后续 JD 匹配会基于这里判断你的真实经历。"></textarea>
+              </details>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="experiences">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>项目经历</h2>
+              <p class="muted">保存真实项目与工作经历，供岗位匹配、自我介绍和面试回答引用；这里不是 Trace。</p>
+            </div>
+            <div class="actions">
+              <button class="primary" data-save-profile>保存项目经历</button>
+            </div>
+          </div>
+          <div class="experience-layout">
+            <section class="profile-section">
+              <h3>项目经历原文</h3>
+              <p class="muted">写清项目背景、你的角色、行动和可验证结果。系统不会把未填写的内容当作事实。</p>
+              <textarea id="profile-projects" class="experience-editor" placeholder="例如：CareerPilot AI｜角色：产品设计与开发｜行动：设计 Planner、Skill 和评测链路｜结果：Planner 离线评测 14/14"></textarea>
+              <div class="experience-writing-guide">
+                <span>建议结构</span>
+                <strong>项目背景 → 我的角色 → 关键行动 → 可验证结果 → 能力标签</strong>
+              </div>
+            </section>
+            <section class="profile-section">
+              <div class="profile-pane-head">
+                <div><h3>经历证据预览</h3><p class="muted">从当前简历与项目原文中提取，供 Agent 引用。</p></div>
+                <span class="tag blue" id="experience-count">0 条</span>
+              </div>
+              <div class="experience-evidence-list" id="experience-evidence-list"></div>
+              <table class="experience-table" hidden><tbody id="experience-table"></tbody></table>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="analysis">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>岗位分析结果</h2>
+              <p class="muted">一次执行完整分析，结果按岗位理解、能力要求、个人匹配和准备重点依次展开。</p>
+            </div>
+            <div class="actions">
+              <button data-jump="jobs">返回岗位池</button>
+              <button data-jump="interview">记录面试</button>
+              <button class="primary" id="start-analysis">运行完整分析</button>
+              <button id="save-analysis">保存当前结果</button>
+            </div>
+          </div>
+
+          <div class="progress-wrap" id="analysis-progress">
+            <div class="progress-label">
+              <span id="analysis-progress-text">准备开始分析</span>
+              <span id="analysis-progress-value">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar" id="analysis-progress-bar"></div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>当前岗位</h3>
+              <label style="margin-bottom: 10px;">选择分析岗位<select id="analysis-job-select"></select></label>
+              <label style="margin-bottom: 10px;">选择分析简历<select id="analysis-resume-select"></select></label>
+              <div class="brief-item" id="analysis-current-job"></div>
+              <h3 style="margin-top: 14px;">原始 JD</h3>
+              <p class="muted" id="analysis-jd"></p>
+              <label style="margin-top: 14px;">公司/业务参考资料<textarea id="analysis-references" placeholder="可粘贴官网链接、新闻链接、公司介绍、业务资料。岗位理解 Skill 会优先基于这里补充业务上下文。"></textarea></label>
+            </div>
+
+            <div class="card">
+              <h3>本次执行</h3>
+              <div class="brief-item" id="api-status" style="margin-bottom: 10px;"><strong>API 状态</strong><span class="muted">正在检查...</span></div>
+              <div class="node-output" id="workflow-summary"></div>
+            </div>
+          </div>
+
+          <div class="analysis-results" id="analysis-results">
+            <div class="analysis-hero" id="analysis-hero"></div>
+
+            <div class="analysis-workbench">
+              <div class="card focus-card analysis-module" data-module-card="jobUnderstanding">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>岗位理解</strong>
+                    <span>先搞清楚这个岗位到底在什么业务里解决什么问题。</span>
+                  </div>
+                </div>
+                <div class="module-progress" data-module-progress="jobUnderstanding">
+                  <div class="progress-label"><span data-module-progress-text="jobUnderstanding">正在生成岗位理解</span><span data-module-progress-value="jobUnderstanding">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="jobUnderstanding"></div></div>
+                </div>
+                <div id="job-understanding"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="capabilityRequirements">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>能力要求</strong>
+                    <span>把 JD 里的显性要求和隐性考点拆开，避免泛泛准备。</span>
+                  </div>
+                </div>
+                <div class="module-progress" data-module-progress="capabilityRequirements">
+                  <div class="progress-label"><span data-module-progress-text="capabilityRequirements">正在提炼能力要求</span><span data-module-progress-value="capabilityRequirements">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="capabilityRequirements"></div></div>
+                </div>
+                <div id="capability-requirements"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="personalStrategy">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>匹配策略</strong>
+                    <span>选择该讲哪段经历、怎么包装，不夸大也不浪费亮点。</span>
+                  </div>
+                </div>
+                <div class="module-progress" data-module-progress="personalStrategy">
+                  <div class="progress-label"><span data-module-progress-text="personalStrategy">正在匹配简历与岗位</span><span data-module-progress-value="personalStrategy">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="personalStrategy"></div></div>
+                </div>
+                <div id="personal-strategy"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="prepFocus">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>准备重点</strong>
+                    <span>沉淀面试前 30 分钟和 2 小时各自该做什么。</span>
+                  </div>
+                </div>
+                <div class="module-progress" data-module-progress="prepFocus">
+                  <div class="progress-label"><span data-module-progress-text="prepFocus">正在生成准备计划</span><span data-module-progress-value="prepFocus">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="prepFocus"></div></div>
+                </div>
+                <div id="prep-focus"></div>
+              </div>
+
+              <div class="analysis-followup-head">
+                <strong>继续生成求职材料</strong>
+                <span>完整分析完成后，再按需要生成投递文案或自我介绍。</span>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="coverLetter">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>Cover Letter</strong>
+                    <span>基于岗位理解和所选简历，生成投递时可直接改用的一段话。</span>
+                  </div>
+                  <button data-generate-module="coverLetter">生成</button>
+                </div>
+                <div class="grid-2" style="margin-bottom:10px;">
+                  <label>发送渠道
+                    <select id="cover-letter-channel">
+                      <option value="中文邮件 Cover Letter">中文邮件 Cover Letter</option>
+                      <option value="BOSS/牛客/微信开场白">BOSS / 牛客 / 微信开场白</option>
+                      <option value="内推自荐语">内推自荐语</option>
+                      <option value="英文 Cover Letter">英文 Cover Letter</option>
+                      <option value="极简招呼">极简招呼</option>
+                    </select>
+                  </label>
+                  <label>语言
+                    <select id="cover-letter-language">
+                      <option value="跟随 JD">跟随 JD</option>
+                      <option value="中文">中文</option>
+                      <option value="英文">英文</option>
+                    </select>
+                  </label>
+                  <label>最早到岗<input class="input" id="cover-letter-arrival" placeholder="实习岗位必填，如：7月25日" /></label>
+                  <label>每周实习<input class="input" id="cover-letter-days" placeholder="实习岗位必填，如：4天" /></label>
+                  <label>连续时长<input class="input" id="cover-letter-duration" placeholder="实习岗位必填，如：4个月" /></label>
+                </div>
+                <div class="module-progress" data-module-progress="coverLetter">
+                  <div class="progress-label"><span data-module-progress-text="coverLetter">正在撰写 Cover Letter</span><span data-module-progress-value="coverLetter">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="coverLetter"></div></div>
+                </div>
+                <div id="cover-letter"></div>
+              </div>
+
+              <div class="card focus-card analysis-module" data-module-card="selfIntroduction">
+                <div class="module-head">
+                  <div class="module-title">
+                    <strong>自我介绍</strong>
+                    <span>按岗位叙事、面试场景和当前绑定简历生成开场表达。</span>
+                  </div>
+                  <button data-generate-module="selfIntroduction">生成</button>
+                </div>
+                <div class="grid-2" style="margin-bottom: 10px;">
+                  <label>面试场景
+                    <select id="self-intro-scene">
+                      <option value="业务面">业务面</option>
+                      <option value="HR 面">HR 面</option>
+                      <option value="创始人面">创始人面</option>
+                      <option value="技术产品面">技术产品面</option>
+                      <option value="咖啡聊 / 非正式沟通">咖啡聊 / 非正式沟通</option>
+                    </select>
+                  </label>
+                  <label>话术时长
+                    <select id="self-intro-length">
+                      <option value="60秒">60 秒</option>
+                      <option value="30秒">30 秒</option>
+                      <option value="90秒">90 秒</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="module-progress" data-module-progress="selfIntroduction">
+                  <div class="progress-label"><span data-module-progress-text="selfIntroduction">正在撰写自我介绍</span><span data-module-progress-value="selfIntroduction">0%</span></div>
+                  <div class="progress-track"><div class="progress-bar" data-module-progress-bar="selfIntroduction"></div></div>
+                </div>
+                <div id="self-introduction"></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 14px;">
+              <div class="section-head" style="margin-bottom: 10px;">
+                <div>
+                  <h3 style="margin-bottom: 4px;">实际执行记录</h3>
+                  <p class="muted">展示本次真实调用的 Planner、Skill、模型状态、耗时和输入输出摘要。</p>
+                </div>
+                <button id="copy-trace">复制 JSON</button>
+              </div>
+              <pre class="trace-box" id="workflow-trace"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="skills">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>系统可以帮你做什么</h2>
+              <p class="muted">6 项 Skill 会由系统根据任务自动选择和组合。你不需要手动决定调用哪个能力。</p>
+            </div>
+            <button class="primary" data-jump="assistant">向助手描述任务</button>
+          </div>
+
+          <div class="capability-intro">
+            <strong>使用方式</strong>
+            <span>在“岗位分析与准备”中提交 JD、简历和目标。系统会先判断任务，再按依赖关系调用一个或多个 Skill。每次实际使用情况会显示在任务结果中。</span>
+          </div>
+
+          <div class="capability-list" id="skill-registry-cards"></div>
+        </div>
+      </section>
+
+      <section class="page" id="traces">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>任务运行记录</h2>
+              <p class="muted">这里记录系统实际调用了哪些 Skill、调用顺序、参数摘要、耗时、模型用量和错误。</p>
+            </div>
+            <div class="actions">
+              <select id="trace-status-filter" style="width:auto;min-width:110px;"><option value="all">全部状态</option><option value="success">成功</option><option value="needs_clarification">待澄清</option><option value="failed">失败</option></select>
+              <button id="export-trace">导出当前 JSON</button>
+              <button id="clear-traces" class="danger">清空历史</button>
+            </div>
+          </div>
+          <div id="trace-metrics" class="trace-metrics">
+            <div class="metric"><span>历史任务</span><strong>0</strong></div>
+            <div class="metric"><span>Skill 调用</span><strong>0</strong></div>
+            <div class="metric"><span>模型调用</span><strong>0</strong></div>
+            <div class="metric"><span>当前耗时</span><strong>0ms</strong></div>
+          </div>
+          <div class="trace-layout">
+            <div id="trace-history-list" class="trace-history-list"><div class="empty">完成一次岗位分析或准备任务后，这里会保存运行记录。</div></div>
+            <div id="trace-run-detail"><div class="empty">选择一条任务查看执行时间线。</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="evals">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>Eval Lab</h2>
+              <p class="muted">分开评估工程回归与规则路由 baseline。这里不评估大模型回答质量、Function Call 参数抽取或线上用户效果。</p>
+            </div>
+            <div class="actions">
+              <button class="primary" id="run-offline-eval">运行离线评测</button>
+            </div>
+          </div>
+
+          <div class="grid-3" id="eval-metrics">
+            <div class="metric"><span>工程回归</span><strong>16 条</strong></div>
+            <div class="metric"><span>规则路由</span><strong>11 条</strong></div>
+            <div class="metric"><span>模型评测</span><strong style="font-size:15px;">未执行</strong></div>
+          </div>
+
+          <div class="card" style="margin-top:14px;">
+            <h3>评测对象与方法</h3>
+            <div class="grid-3" style="margin-top:10px;">
+              <div class="brief-item"><strong>工程回归 · 16条</strong><span class="muted">直接调用本地函数并执行预定义布尔断言，检查信号分类、证据约束、Cover Letter 输入校验、状态写回和 Trace 字段。</span></div>
+              <div class="brief-item"><strong>规则路由 · 11条</strong><span class="muted">人工编写用户任务与标准 Skill 标签，对比关键词路由结果，计算 Routing Accuracy。</span></div>
+              <div class="brief-item"><strong>明确未评</strong><span class="muted">没有评估模型生成质量、参数字段准确率、稳定性、Token 成本或真实用户任务完成率。</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px;">
+            <div class="section-head" style="margin-bottom:10px;">
+              <div><h3 style="margin-bottom:4px;">评测结果</h3><p class="muted">每条展示标准答案、实际结果和判定方法；失败项进入 badcase。</p></div>
+            </div>
+            <div id="eval-results"><div class="empty">点击“运行离线评测”生成工程回归与路由 baseline。</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="interview">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <h2>面试复盘</h2>
+              <p class="muted">按一面、二面、三面管理材料、真实问答和分析结果。</p>
+            </div>
+            <div class="actions">
+              <button data-jump="jobs">返回项目总览</button>
+              <button id="delete-review-round" class="danger">删除当前轮次</button>
+              <button id="save-review">保存记录</button>
+            </div>
+          </div>
+
+          <div class="interview-loop">
+            <div class="loop-card">
+              <h3>面试记录就是新的输入</h3>
+              <p class="muted">录入真实问题和当时回答。系统会保留面试前准备快照；重跑时归档旧复盘，不用事后改写污染覆盖率。</p>
+              <div class="actions" style="margin-top:12px;">
+                <button data-add-round="一面">新增一面</button>
+                <button data-add-round="二面">新增二面</button>
+                <button data-add-round="HR 面">新增 HR 面</button>
+              </div>
+            </div>
+            <div class="loop-card">
+              <h3>复盘链路</h3>
+              <div class="loop-flow">
+                <div class="loop-step"><b>1</b><span>真实问题与笔记进入 <strong>复盘真实面试</strong>，对比此前预测覆盖。</span></div>
+                <div class="loop-step"><b>2</b><span>新岗位信号写回当前项目，修正岗位理解、候选人缺口和风险判断。</span></div>
+                <div class="loop-step"><b>3</b><span>下一轮准备会继续调用 <strong>面试风险诊断</strong> 与 <strong>准备计划</strong>。</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="interview-round-bar">
+            <label>当前岗位<select id="review-job-shortcut"></select></label>
+            <div><span>已记录轮次</span><strong id="review-round-count">0 轮</strong></div>
+            <button class="primary" id="add-next-review-round">新增下一轮</button>
+          </div>
+          <nav class="interview-round-tabs" id="review-round-tabs" aria-label="选择面试轮次"></nav>
+
+          <div class="review-board">
+            <div class="review-overview" id="review-overview"></div>
+
+            <section class="review-runner" id="review-runner" aria-labelledby="review-runner-title">
+              <div class="review-runner-main">
+                <div class="review-runner-heading">
+                  <span class="task-eyebrow">下一步</span>
+                  <div>
+                    <h3 id="review-runner-title">3. 调用面试复盘 Skill</h3>
+                    <p>确认下方输入后，调用面试复盘 Skill 生成逐题诊断、准备效果评测与下一轮行动。</p>
+                  </div>
+                </div>
+                <div class="review-readiness" id="review-readiness"></div>
+                <div class="review-mode-list" id="review-mode-list" aria-label="本次复盘模式"></div>
+                <details class="review-skill-input" open>
+                  <summary>查看本次 Skill 输入</summary>
+                  <div class="review-skill-input-grid" id="review-skill-input-grid"></div>
+                </details>
+              </div>
+              <div class="review-runner-action">
+                <span class="skill-callout">将调用 <code>interview-retrospective</code> Skill</span>
+                <button class="primary review-run-button" id="analyze-review">运行本轮分析</button>
+                <p class="review-run-status" id="review-run-status" aria-live="polite"></p>
+              </div>
+            </section>
+
+            <div id="review-feedback-result" tabindex="-1"></div>
+
+            <div class="card review-panel">
+              <div class="section-head" style="margin-bottom: 0;">
+                <div>
+                  <h3 style="margin-bottom: 4px;">1. 上传本轮材料</h3>
+                  <p class="muted">选择 Word 面试记录或音频；系统提取正文和问题后再进入复盘。</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <label>轮次名称<input class="input" id="review-round-title" placeholder="例如：一面 / 二面 / HR 面" /></label>
+                <label>面试时间<input class="input" id="review-round-date" type="datetime-local" /></label>
+                <label>面试形式<input class="input" id="review-round-format" placeholder="电话 / 视频 / 现场" /></label>
+                <label>面试官/部门<input class="input" id="review-round-interviewer" placeholder="业务负责人 / HRBP" /></label>
+                <div class="wide interview-source-upload" id="review-source-drop">
+                  <div>
+                    <strong>上传面试材料</strong>
+                    <span class="muted" id="review-source-status">支持 Word（.docx）或音频（mp3、m4a、wav、webm），单文件不超过 25 MiB</span>
+                  </div>
+                  <input id="review-source-file" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,audio/*,.mp3,.m4a,.wav,.webm" hidden />
+                  <div class="interview-upload-actions">
+                    <button type="button" id="review-source-trigger">上传 Word</button>
+                    <button type="button" id="review-audio-trigger">上传音频</button>
+                  </div>
+                  <audio id="review-audio-preview" controls></audio>
+                </div>
+                <label class="wide">提取结果（运行前可校对）<textarea class="compact-textarea" id="review-source-draft" placeholder="上传后会自动显示 Word 正文或音频转写；也可以直接粘贴已有转写稿。"></textarea></label>
+                <div class="wide actions">
+                  <button type="button" id="extract-review-draft">重新提取问答</button>
+                  <span class="muted" id="review-extract-status">文件提取完成后会自动生成问答；你可以在运行前校对。</span>
+                </div>
+                <label class="wide">整体概况<textarea class="compact-textarea" id="review-notes" placeholder="这一轮整体考察了什么？你的总体表现如何？有哪些岗位/公司/匹配度的新判断？"></textarea></label>
+                <label class="wide">下一步动作<textarea class="compact-textarea" id="review-next-steps" placeholder="下一轮前要补什么、改什么、练什么？"></textarea></label>
+              </div>
+            </div>
+
+            <div class="review-workspace">
+              <div class="card review-panel">
+                <div>
+                  <h3>岗位与轮次</h3>
+                  <p class="muted">先选岗位，再建立一面、二面、HR 面等轮次。</p>
+                </div>
+                <label>选择岗位<select id="review-job-select"></select></label>
+                <label>选择轮次<select id="review-round-select"></select></label>
+                <div class="round-actions">
+                  <button data-add-round="一面">一面</button>
+                  <button data-add-round="二面">二面</button>
+                  <button data-add-round="HR 面">HR 面</button>
+                  <button data-add-round="终面">终面</button>
+                  <button data-add-round="笔试/测评">测评</button>
+                  <button id="new-review-round">自定义</button>
+                </div>
+                <div class="review-card-list" id="review-round-list"></div>
+              </div>
+
+              <div class="card review-panel">
+                <div class="section-head" style="margin-bottom: 0;">
+                  <div>
+                    <h3 style="margin-bottom: 4px;">2. 问题列表</h3>
+                    <p class="muted">先从音频转写提取面试官问题，再逐题校对回答。</p>
+                  </div>
+                  <div class="question-list-actions">
+                    <button id="extract-audio-questions" class="icon-action">从音频转写提取问题</button>
+                    <button id="extract-word-questions" class="icon-action">从 Word 转写提取问题</button>
+                    <button id="new-review-question" class="icon-action">新增问题</button>
+                  </div>
+                </div>
+                <div class="review-card-list" id="review-question-list"></div>
+              </div>
+
+              <div class="card review-editor">
+                <div class="section-head" style="margin-bottom: 0;">
+                  <div>
+                    <h3 style="margin-bottom: 4px;">问题、回答与改进</h3>
+                    <p class="muted">记录真实回答，再补充问题分析、待补强和更好的回答。</p>
+                  </div>
+                  <button id="delete-review-question" class="danger icon-action">删除问题</button>
+                </div>
+
+                <label>问题<input class="input" id="review-question-title" placeholder="例如：你怎么理解 AI Agent 平台的冷启动？" /></label>
+                <div class="review-question-meta">
+                  <label>问题分类
+                    <select id="review-question-category">
+                      <option value="简历面">简历面</option>
+                      <option value="业务面">业务面</option>
+                      <option value="行为面">行为面</option>
+                      <option value="反问">反问</option>
+                    </select>
+                  </label>
+                  <label>提问方
+                    <select id="review-questioner-role">
+                      <option value="面试官">面试官</option>
+                      <option value="候选人">候选人</option>
+                    </select>
+                  </label>
+                </div>
+                <label><span id="review-answer-label">候选人的真实回答</span><textarea class="compact-textarea" id="review-question-answer" placeholder="尽量还原面试现场的回答，不要事后美化。"></textarea></label>
+                <label>问题分析<textarea class="compact-textarea" id="review-question-thinking" placeholder="这个问题在考什么？哪些地方回答有效，哪些地方不足？"></textarea></label>
+                <label>待补强<textarea class="compact-textarea" id="review-question-gap" placeholder="需要补的业务知识、项目细节、数据口径、表达结构。"></textarea></label>
+                <label>改进后的回答<textarea id="review-question-next-answer" placeholder="整理成下一次可以直接复用的回答。"></textarea></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "面试风险诊断"
+  short_description: "识别追问、证据风险和表达边界"
+  default_prompt: "Use $diagnose-interview-risks to identify likely follow-ups and evidence boundaries for this job and candidate."

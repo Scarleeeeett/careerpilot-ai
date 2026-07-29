@@ -1,0 +1,16 @@
+[
+  { "id": "route_jd_01", "query": "这个岗位主要负责什么？", "expectedSteps": ["understandJobIndustry"] },
+  { "id": "route_jd_02", "query": "帮我拆一下这份 JD 的核心能力要求", "expectedSteps": ["understandJobIndustry"] },
+  { "id": "route_industry_01", "query": "这家公司属于什么行业，上下游和竞品有哪些？", "expectedSteps": ["understandJobIndustry"] },
+  { "id": "route_match_01", "query": "我的简历和这个岗位匹配吗？", "expectedSteps": ["understandJobIndustry", "profileMatcher"] },
+  { "id": "route_risk_01", "query": "这个岗位面试最可能追问什么？", "expectedSteps": ["understandJobIndustry", "profileMatcher", "riskDiagnoser"] },
+  { "id": "route_prep_01", "query": "帮我生成面试前 30 分钟准备计划", "expectedSteps": ["understandJobIndustry", "profileMatcher", "riskDiagnoser", "prepPlanner"] },
+  { "id": "route_cover_01", "query": "帮我写一段 BOSS 直聘开场白", "expectedSteps": ["coverLetterTailor"] },
+  { "id": "route_cover_02", "query": "根据这个 JD 生成一封 Cover Letter", "expectedSteps": ["understandJobIndustry", "coverLetterTailor"] },
+  { "id": "route_multi_01", "query": "分析这份 JD，然后生成准备计划", "expectedSteps": ["understandJobIndustry", "profileMatcher", "riskDiagnoser", "prepPlanner"] },
+  { "id": "route_multi_02", "query": "先看简历匹配度，再告诉我面试风险", "expectedSteps": ["understandJobIndustry", "profileMatcher", "riskDiagnoser"] },
+  { "id": "route_feedback_01", "query": "复盘这次面试", "expectedSteps": ["interviewRetrospective"] },
+  { "id": "route_feedback_02", "query": "复盘一面并生成二面准备计划", "expectedSteps": ["understandJobIndustry", "profileMatcher", "interviewRetrospective", "riskDiagnoser", "prepPlanner"] },
+  { "id": "route_feedback_03", "query": "对比两轮真实面试并评估准备覆盖", "expectedSteps": ["interviewRetrospective"] },
+  { "id": "route_unknown_01", "query": "今天心情怎么样", "expectedSteps": [] }
+]

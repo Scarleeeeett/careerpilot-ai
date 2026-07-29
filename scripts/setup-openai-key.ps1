@@ -1,16 +1,16 @@
 $ErrorActionPreference = "Stop"
 
-$key = Read-Host "Enter your DeepSeek API Key"
+$key = Read-Host "Enter your OpenAI API Key"
 if ([string]::IsNullOrWhiteSpace($key)) {
   Write-Host "No API key entered. Canceled."
   exit 1
 }
 
-$envPath = Join-Path $PSScriptRoot ".env"
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$envPath = Join-Path $projectRoot ".env"
 $content = @(
-  "AI_PROVIDER=deepseek",
-  "DEEPSEEK_API_KEY=$key",
-  "DEEPSEEK_MODEL=deepseek-v4-flash",
+  "OPENAI_API_KEY=$key",
+  "OPENAI_MODEL=gpt-4o-mini",
   "HTTPS_PROXY=http://127.0.0.1:7890",
   "HTTP_PROXY=http://127.0.0.1:7890"
 )

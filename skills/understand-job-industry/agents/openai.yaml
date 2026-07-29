@@ -1,0 +1,4 @@
+interface:
+  display_name: "岗位行业速研"
+  short_description: "输入公司或JD，生成产业链、竞品、术语与面试行业报告"
+  default_prompt: "Use $understand-job-industry to parse this company and JD, research the industry with current evidence, and produce an interview-ready brief."

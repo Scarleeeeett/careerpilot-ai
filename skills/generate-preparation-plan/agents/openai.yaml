@@ -1,0 +1,4 @@
+interface:
+  display_name: "面试准备计划"
+  short_description: "把岗位、证据、风险和反馈转成行动清单"
+  default_prompt: "Use $generate-preparation-plan to create a focused, evidence-linked preparation plan for the next interview."

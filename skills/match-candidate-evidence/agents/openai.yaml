@@ -1,0 +1,4 @@
+interface:
+  display_name: "候选人证据匹配"
+  short_description: "把真实简历证据映射到 JD，并识别匹配与缺口"
+  default_prompt: "Use $match-candidate-evidence to map this candidate's verified evidence to the target JD without inventing experience."

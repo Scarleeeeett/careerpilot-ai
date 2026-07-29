@@ -1,0 +1,4 @@
+interface:
+  display_name: "面试材料提取与复盘"
+  short_description: "从 Word 或音频提取真实问答并生成面试复盘与下一轮行动"
+  default_prompt: "Use $interview-retrospective to extract this Word or audio interview record, reconstruct the Q&A, and prepare my next round."
